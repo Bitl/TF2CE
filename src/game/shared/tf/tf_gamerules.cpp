@@ -77,8 +77,14 @@ static int g_TauntCamAchievements[] =
 extern ConVar mp_capstyle;
 extern ConVar sv_turbophysics;
 
-ConVar tf_caplinear( "tf_caplinear", "1", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "If set to 1, teams must capture control points linearly." );
-ConVar tf_stalematechangeclasstime( "tf_stalematechangeclasstime", "20", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Amount of time that players are allowed to change class in stalemates." );
+#ifdef TF2CE
+ConVar tf_caplinear("tf_caplinear", "1", FCVAR_NOTIFY | FCVAR_REPLICATED, "If set to 1, teams must capture control points linearly.");
+ConVar tf_stalematechangeclasstime("tf_stalematechangeclasstime", "20", FCVAR_NOTIFY | FCVAR_REPLICATED, "Amount of time that players are allowed to change class in stalemates.");
+#else
+ConVar tf_caplinear("tf_caplinear", "1", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "If set to 1, teams must capture control points linearly.");
+ConVar tf_stalematechangeclasstime("tf_stalematechangeclasstime", "20", FCVAR_REPLICATED | FCVAR_DEVELOPMENTONLY, "Amount of time that players are allowed to change class in stalemates.");
+#endif
+
 ConVar tf_birthday( "tf_birthday", "0", FCVAR_NOTIFY | FCVAR_REPLICATED );
 
 #ifdef GAME_DLL
@@ -86,6 +92,9 @@ ConVar tf_birthday( "tf_birthday", "0", FCVAR_NOTIFY | FCVAR_REPLICATED );
 ConVar mp_waitingforplayers_time( "mp_waitingforplayers_time", (IsX360()?"15":"30"), FCVAR_GAMEDLL | FCVAR_DEVELOPMENTONLY, "WaitingForPlayers time length in seconds" );
 ConVar tf_gravetalk( "tf_gravetalk", "1", FCVAR_NOTIFY, "Allows living players to hear dead players using text/voice chat." );
 ConVar tf_spectalk( "tf_spectalk", "1", FCVAR_NOTIFY, "Allows living players to hear spectators using text chat." );
+#ifdef TF2CE
+ConVar tfce_mapgamemode("tf2ce_mapgamemode", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "");
+#endif
 #endif
 
 #ifdef GAME_DLL
@@ -513,19 +522,64 @@ void CTFGameRules::Activate()
 {
 	m_iBirthdayMode = BIRTHDAY_RECALCULATE;
 
-	m_nGameType.Set( TF_GAMETYPE_UNDEFINED );
+#ifdef TF2CE
+	SwapGamemode_Internal();
+#else
+	m_nGameType.Set(TF_GAMETYPE_UNDEFINED);
 
-	CCaptureFlag *pFlag = dynamic_cast<CCaptureFlag*> ( gEntList.FindEntityByClassname( NULL, "item_teamflag" ) );
-	if ( pFlag )
+	CCaptureFlag* pFlag = dynamic_cast<CCaptureFlag*> (gEntList.FindEntityByClassname(NULL, "item_teamflag"));
+	if (pFlag)
 	{
-		m_nGameType.Set( TF_GAMETYPE_CTF );
+		m_nGameType.Set(TF_GAMETYPE_CTF);
 	}
 
-	if ( g_hControlPointMasters.Count() )
+	if (g_hControlPointMasters.Count())
 	{
-		m_nGameType.Set( TF_GAMETYPE_CP );
+		m_nGameType.Set(TF_GAMETYPE_CP);
 	}
+#endif
 }
+
+#ifdef TF2CE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFGameRules::SwapGamemode()
+{
+	SwapGamemode_Internal();
+	RoundRespawn();
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFGameRules::SwapGamemode_Internal()
+{
+	int gamemode = tfce_mapgamemode.GetInt();
+
+	if (gamemode == 0)
+	{
+		m_nGameType.Set(TF_GAMETYPE_UNDEFINED);
+
+		CCaptureFlag* pFlag = dynamic_cast<CCaptureFlag*> (gEntList.FindEntityByClassname(NULL, "item_teamflag"));
+		if (pFlag)
+		{
+			m_nGameType.Set(TF_GAMETYPE_CTF);
+		}
+
+		if (g_hControlPointMasters.Count())
+		{
+			m_nGameType.Set(TF_GAMETYPE_CP);
+		}
+	}
+	else
+	{
+		m_nGameType.Set(gamemode);
+	}
+
+	cvarVal = gamemode;
+}
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: 
@@ -623,6 +677,7 @@ void CTFGameRules::CleanUpMap( void )
 	}
 }
 
+#ifdef TF2CE
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------ob
@@ -631,6 +686,9 @@ void CTFGameRules::RecalculateControlPointState( void )
 	Assert( ObjectiveResource() );
 
 	if ( !g_hControlPointMasters.Count() )
+		return;
+
+	if (GetGameType() != TF_GAMETYPE_CP)
 		return;
 
 	if ( g_pObjectiveResource && g_pObjectiveResource->PlayingMiniRounds() )
@@ -666,6 +724,7 @@ void CTFGameRules::RecalculateControlPointState( void )
 		}
 	}
 }
+#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Called when a new round is being initialized
@@ -1176,6 +1235,15 @@ void CTFGameRules::RadiusDamage( const CTakeDamageInfo &info, const Vector &vecS
 	// Add the ability to ignore the world trace
 	void CTFGameRules::Think()
 	{
+#ifdef TF2CE
+		if (cvarVal != tfce_mapgamemode.GetInt())
+		{
+			SwapGamemode();
+			BaseClass::Think();
+			return;
+		}
+#endif
+
 		if ( !g_fGameOver )
 		{
 			if ( gpGlobals->curtime > m_flNextPeriodicThink )

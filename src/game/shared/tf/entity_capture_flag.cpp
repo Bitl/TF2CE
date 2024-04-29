@@ -198,19 +198,19 @@ void CCaptureFlag::OnDataChanged( DataUpdateType_t updateType )
 //-----------------------------------------------------------------------------
 // Purpose:
 //-----------------------------------------------------------------------------
-void CCaptureFlag::Spawn( void )
+void CCaptureFlag::Spawn(void)
 {
 	// Precache the model and sounds.  Set the flag model.
 	Precache();
-	SetModel( TF_FLAG_MODEL );
+	SetModel(TF_FLAG_MODEL);
 
 	// Set the flag solid and the size for touching.
-	SetSolid( SOLID_BBOX );
-	SetSolidFlags( FSOLID_NOT_SOLID | FSOLID_TRIGGER );
-	SetSize( vec3_origin, vec3_origin );
+	SetSolid(SOLID_BBOX);
+	SetSolidFlags(FSOLID_NOT_SOLID | FSOLID_TRIGGER);
+	SetSize(vec3_origin, vec3_origin);
 
 	// Bloat the box for player pickup
-	CollisionProp()->UseTriggerBounds( true, 24 );
+	CollisionProp()->UseTriggerBounds(true, 24);
 
 	// use the initial dynamic prop "m_bStartDisabled" setting to set our own m_bDisabled flag
 #ifdef GAME_DLL
@@ -231,7 +231,7 @@ void CCaptureFlag::Spawn( void )
 	m_vecResetPos = GetAbsOrigin();
 	m_vecResetAng = GetAbsAngles();
 
-	SetFlagStatus( TF_FLAGINFO_NONE );
+	SetFlagStatus(TF_FLAGINFO_NONE);
 	ResetFlagReturnTime();
 	ResetFlagNeutralTime();
 
@@ -243,21 +243,39 @@ void CCaptureFlag::Spawn( void )
 #else
 
 	// add this element if it isn't already in the list
-	if ( g_Flags.Find( entindex() ) == -1 )
+	if (g_Flags.Find(entindex()) == -1)
 	{
-		g_Flags.AddToTail( entindex() );
+		g_Flags.AddToTail(entindex());
 	}
 
 #endif
 
-	if ( m_bDisabled )
+#ifdef TF2CE
+	if (TFGameRules()->GetGameType() != TF_GAMETYPE_CTF)
 	{
-		SetDisabled( true );
+		SetDisabled(true);
 	}
 	else
 	{
-		SetDisabled( false );
+		if (m_bDisabled)
+		{
+			SetDisabled(true);
+		}
+		else
+		{
+			SetDisabled(false);
+		}
 	}
+#else
+	if (m_bDisabled)
+	{
+		SetDisabled(true);
+	}
+	else
+	{
+		SetDisabled(false);
+	}
+#endif
 }
 
 #ifdef GAME_DLL

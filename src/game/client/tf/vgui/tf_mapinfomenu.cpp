@@ -364,6 +364,12 @@ void CTFMapInfoMenu::LoadMapPage( const char *mapName )
 			{
 				pszDefault = "maps/default_cp.txt";
 			}
+#ifdef TF2CE_CLIENT
+			else if (TFGameRules()->GetGameType() == TF_GAMETYPE_TDM)
+			{
+				pszDefault = "maps/default_tdm.txt";
+			}
+#endif
 		}
 
 		if ( g_pFullFileSystem->FileExists( pszDefault ) )

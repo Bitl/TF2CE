@@ -47,6 +47,9 @@
 #endif
 
 extern ConVar	tf_avoidteammates;
+#ifdef TF2CE
+extern ConVar	tfce_mapgamemode;
+#endif
 
 extern Vector g_TFClassViewVectors[];
 
@@ -150,6 +153,15 @@ public:
 	virtual bool	TimerMayExpire( void );
 
 	virtual void	Activate();
+
+#ifdef TF2CE
+	virtual void	SwapGamemode();
+private:
+	virtual void	SwapGamemode_Internal();
+
+	int cvarVal;
+public:
+#endif
 
 	virtual bool	AllowDamage( CBaseEntity *pVictim, const CTakeDamageInfo &info );
 

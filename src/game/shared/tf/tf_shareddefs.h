@@ -144,6 +144,9 @@ enum
 	TF_GAMETYPE_UNDEFINED = 0,
 	TF_GAMETYPE_CTF,
 	TF_GAMETYPE_CP,
+#ifdef TF2CE
+	TF_GAMETYPE_TDM,
+#endif
 };
 extern const char *g_aGameTypeNames[];	// localized gametype names
 

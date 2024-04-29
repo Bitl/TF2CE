@@ -52,10 +52,24 @@ void CCaptureZone::Spawn()
 	InitTrigger();
 	SetTouch( &CCaptureZone::Touch );
 
-	if ( m_bDisabled )
+#ifdef TF2CE
+	if (TFGameRules()->GetGameType() != TF_GAMETYPE_CTF)
 	{
-		SetDisabled( true );
+		SetDisabled(true);
 	}
+	else
+	{
+		if (m_bDisabled)
+		{
+			SetDisabled(true);
+		}
+	}
+#else
+	if (m_bDisabled)
+	{
+		SetDisabled(true);
+	}
+#endif
 
 	m_flNextTouchingEnemyZoneWarning = -1;
 }

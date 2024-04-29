@@ -13,6 +13,9 @@
 #include "mp_shareddefs.h"
 #include "engine/IEngineSound.h"
 #include "soundenvelope.h"
+#ifdef TF2CE
+#include "tf_gamerules.h"
+#endif
 
 BEGIN_DATADESC(CTeamControlPoint)
 	DEFINE_KEYFIELD( m_iszPrintName,			FIELD_STRING,	"point_printname" ),
@@ -106,7 +109,18 @@ void CTeamControlPoint::Spawn( void )
 
 	InternalSetOwner( m_iDefaultOwner, false );	//init the owner of this point
 
-	SetActive( !m_bStartDisabled );
+#ifdef TF2CE
+	if (TFGameRules()->GetGameType() != TF_GAMETYPE_CP)
+	{
+		SetActive(false);
+	}
+	else
+	{
+		SetActive(!m_bStartDisabled);
+	}
+#else
+	SetActive(!m_bStartDisabled);
+#endif
 
 	BaseClass::Spawn();
 
