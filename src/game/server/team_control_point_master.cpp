@@ -174,7 +174,13 @@ bool CTeamControlPointMaster::FindControlPoints( void )
 	{
 		CTeamControlPoint *pPoint = assert_cast<CTeamControlPoint *>(pEnt);
 
-		if( pPoint->IsActive() )
+#ifdef TF2CE
+		// for whatever reason, the points being disabled fucks up the spawns on cp_badlands.
+		// The master will now look for spawns regardless if they are disabled.
+		/*if (pPoint->IsActive())*/
+#else
+		if (pPoint->IsActive())
+#endif
 		{
 			int index = pPoint->GetPointIndex();
 

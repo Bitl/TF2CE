@@ -93,7 +93,7 @@ ConVar mp_waitingforplayers_time( "mp_waitingforplayers_time", (IsX360()?"15":"3
 ConVar tf_gravetalk( "tf_gravetalk", "1", FCVAR_NOTIFY, "Allows living players to hear dead players using text/voice chat." );
 ConVar tf_spectalk( "tf_spectalk", "1", FCVAR_NOTIFY, "Allows living players to hear spectators using text chat." );
 #ifdef TF2CE
-ConVar tfce_mapgamemode("tf2ce_mapgamemode", "0", FCVAR_REPLICATED | FCVAR_NOTIFY, "");
+ConVar tfce_mapgamemode("tf2ce_mapgamemode", "0", FCVAR_NOTIFY, "");
 #endif
 #endif
 
@@ -677,7 +677,6 @@ void CTFGameRules::CleanUpMap( void )
 	}
 }
 
-#ifdef TF2CE
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------ob
@@ -686,9 +685,6 @@ void CTFGameRules::RecalculateControlPointState( void )
 	Assert( ObjectiveResource() );
 
 	if ( !g_hControlPointMasters.Count() )
-		return;
-
-	if (GetGameType() != TF_GAMETYPE_CP)
 		return;
 
 	if ( g_pObjectiveResource && g_pObjectiveResource->PlayingMiniRounds() )
@@ -724,7 +720,6 @@ void CTFGameRules::RecalculateControlPointState( void )
 		}
 	}
 }
-#endif
 
 //-----------------------------------------------------------------------------
 // Purpose: Called when a new round is being initialized
@@ -1490,21 +1485,44 @@ ConCommand mp_showrespawntimes( "mp_showrespawntimes", cc_ShowRespawnTimes, "Sho
 
 CBaseEntity *CTFGameRules::GetPlayerSpawnSpot( CBasePlayer *pPlayer )
 {
+#ifdef TF2CE
+	CTFPlayer* pTFPlayer = ToTFPlayer(pPlayer);
+	if (!pTFPlayer)
+		return NULL;
+
 	// get valid spawn point
-	CBaseEntity *pSpawnSpot = pPlayer->EntSelectSpawnPoint();
+	CBaseEntity* pSpawnSpot = pTFPlayer->EntSelectSpawnPoint();
 
 	// drop down to ground
-	Vector GroundPos = DropToGround( pPlayer, pSpawnSpot->GetAbsOrigin(), VEC_HULL_MIN, VEC_HULL_MAX );
+	Vector GroundPos = DropToGround(pTFPlayer, pSpawnSpot->GetAbsOrigin(), VEC_HULL_MIN, VEC_HULL_MAX);
 
 	// Move the player to the place it said.
-	pPlayer->SetLocalOrigin( GroundPos + Vector(0,0,1) );
-	pPlayer->SetAbsVelocity( vec3_origin );
-	pPlayer->SetLocalAngles( pSpawnSpot->GetLocalAngles() );
-	pPlayer->m_Local.m_vecPunchAngle = vec3_angle;
-	pPlayer->m_Local.m_vecPunchAngleVel = vec3_angle;
-	pPlayer->SnapEyeAngles( pSpawnSpot->GetLocalAngles() );
+	pTFPlayer->SetLocalOrigin(GroundPos + Vector(0, 0, 1));
+	pTFPlayer->SetAbsVelocity(vec3_origin);
+	pTFPlayer->SetLocalAngles(pSpawnSpot->GetLocalAngles());
+	pTFPlayer->m_Local.m_vecPunchAngle = vec3_angle;
+	pTFPlayer->m_Local.m_vecPunchAngleVel = vec3_angle;
+	pTFPlayer->SnapEyeAngles(pSpawnSpot->GetLocalAngles());
 
 	return pSpawnSpot;
+#else
+
+	// get valid spawn point
+	CBaseEntity* pSpawnSpot = pPlayer->EntSelectSpawnPoint();
+
+	// drop down to ground
+	Vector GroundPos = DropToGround(pPlayer, pSpawnSpot->GetAbsOrigin(), VEC_HULL_MIN, VEC_HULL_MAX);
+
+	// Move the player to the place it said.
+	pPlayer->SetLocalOrigin(GroundPos + Vector(0, 0, 1));
+	pPlayer->SetAbsVelocity(vec3_origin);
+	pPlayer->SetLocalAngles(pSpawnSpot->GetLocalAngles());
+	pPlayer->m_Local.m_vecPunchAngle = vec3_angle;
+	pPlayer->m_Local.m_vecPunchAngleVel = vec3_angle;
+	pPlayer->SnapEyeAngles(pSpawnSpot->GetLocalAngles());
+
+	return pSpawnSpot;
+#endif
 }
 
 //-----------------------------------------------------------------------------
