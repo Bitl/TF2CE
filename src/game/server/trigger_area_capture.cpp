@@ -12,6 +12,9 @@
 #include "team_objectiveresource.h"
 #include "team_control_point_master.h"
 #include "teamplayroundbased_gamerules.h"
+#ifdef TF2CE
+#include "tf_gamerules.h"
+#endif
 
 extern ConVar mp_capstyle;
 extern ConVar mp_blockstyle;
@@ -79,6 +82,13 @@ CTriggerAreaCapture::CTriggerAreaCapture()
 void CTriggerAreaCapture::Spawn( void )
 {
 	BaseClass::Spawn();
+
+#ifdef TF2CE
+	if (TFGameRules()->GetGameType() != TF_GAMETYPE_CP)
+	{
+		m_bDisabled = true;
+	}
+#endif
 
 	AddSpawnFlags( SF_TRIGGER_ALLOW_CLIENTS );
 
