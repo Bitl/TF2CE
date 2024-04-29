@@ -1797,7 +1797,6 @@ void CTFGameRules::PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &in
 				pObject = dynamic_cast<CBaseObject *>( pInflictorOwner );
 			}
 		}
-		
 	}
 	else if( pKiller && pKiller->IsBaseObject() )
 	{
@@ -1866,6 +1865,13 @@ void CTFGameRules::PlayerKilled( CBasePlayer *pVictim, const CTakeDamageInfo &in
 	{
 		CTF_GameStats.Event_AssistKill( ToTFPlayer( pAssister ), pVictim );
 	}
+
+#ifdef TF2CE
+	if (TFGameRules()->GetGameType() == TF_GAMETYPE_TDM)
+	{
+		TFTeamMgr()->AddTeamScore(pScorer->GetTeamNumber(), 1);
+	}
+#endif
 
 	BaseClass::PlayerKilled( pVictim, info );
 }
