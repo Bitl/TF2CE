@@ -229,6 +229,8 @@ BEGIN_DATADESC( CTFGameRulesProxy )
 	DEFINE_OUTPUT(m_OnGamemodeChangedCTF, "OnGamemodeChangedCTF"),
 	DEFINE_OUTPUT(m_OnGamemodeChangedCP, "OnGamemodeChangedCP"),
 	DEFINE_OUTPUT(m_OnGamemodeChangedTDM, "OnGamemodeChangedTDM"),
+	DEFINE_OUTPUT(m_OnWonByTeam1,		"OnWonByTeam1"),
+	DEFINE_OUTPUT(m_OnWonByTeam2,		"OnWonByTeam2"),
 #endif
 END_DATADESC()
 
@@ -331,6 +333,7 @@ void CTFGameRulesProxy::Activate()
 
 #ifdef TF2CE
 	ListenForGameEvent("gamemode_changed");
+	ListenForGameEvent("teamplay_round_win");
 #endif
 
 	BaseClass::Activate();
@@ -348,22 +351,38 @@ void CTFGameRulesProxy::FireGameEvent(IGameEvent* event)
 
 	if (FStrEq(pszEventName, "gamemode_changed"))
 	{
-		int iWinningTeam = event->GetInt("gamemode");
+		int iGM = event->GetInt("gamemode");
+
+		switch (iGM)
+		{
+			case TF_GAMETYPE_CTF:
+				m_OnGamemodeChangedCTF.FireOutput(this, this);
+				break;
+			case TF_GAMETYPE_CP:
+				m_OnGamemodeChangedCP.FireOutput(this, this);
+				break;
+			case TF_GAMETYPE_TDM:
+				m_OnGamemodeChangedTDM.FireOutput(this, this);
+				break;
+			case TF_GAMETYPE_UNDEFINED:
+			default:
+				break;
+		}
+	}
+	else if (FStrEq(pszEventName, "teamplay_round_win"))
+	{
+		int iWinningTeam = event->GetInt("team");
 
 		switch (iWinningTeam)
 		{
-		case TF_GAMETYPE_CTF:
-			m_OnGamemodeChangedCTF.FireOutput(this, this);
-			break;
-		case TF_GAMETYPE_CP:
-			m_OnGamemodeChangedCP.FireOutput(this, this);
-			break;
-		case TF_GAMETYPE_TDM:
-			m_OnGamemodeChangedTDM.FireOutput(this, this);
-			break;
-		case TF_GAMETYPE_UNDEFINED:
-		default:
-			break;
+			case TF_TEAM_RED:
+				m_OnWonByTeam1.FireOutput(this, this);
+				break;
+			case TF_TEAM_BLUE:
+				m_OnWonByTeam2.FireOutput(this, this);
+				break;
+			default:
+				break;
 		}
 	}
 #endif

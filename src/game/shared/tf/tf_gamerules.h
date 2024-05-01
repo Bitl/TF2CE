@@ -81,6 +81,8 @@ public:
 	COutputEvent	m_OnGamemodeChangedCTF;
 	COutputEvent	m_OnGamemodeChangedCP;
 	COutputEvent	m_OnGamemodeChangedTDM;
+	COutputEvent	m_OnWonByTeam1;
+	COutputEvent	m_OnWonByTeam2;
 #endif
 
 	virtual void Activate();
