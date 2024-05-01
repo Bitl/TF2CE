@@ -207,7 +207,11 @@ public:
 public:
 	void State_Transition( gamerules_roundstate_t newState );
 
-	void RespawnPlayers( bool bForceRespawn, bool bTeam = false, int iTeam = TEAM_UNASSIGNED );
+#ifdef TF2CE 
+	virtual void RespawnPlayers( bool bForceRespawn, bool bTeam = false, int iTeam = TEAM_UNASSIGNED );
+#else
+	void RespawnPlayers(bool bForceRespawn, bool bTeam = false, int iTeam = TEAM_UNASSIGNED);
+#endif
 
 	void SetForceMapReset( bool reset );
 

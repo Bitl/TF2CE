@@ -93,7 +93,7 @@ ConVar mp_waitingforplayers_time( "mp_waitingforplayers_time", (IsX360()?"15":"3
 ConVar tf_gravetalk( "tf_gravetalk", "1", FCVAR_NOTIFY, "Allows living players to hear dead players using text/voice chat." );
 ConVar tf_spectalk( "tf_spectalk", "1", FCVAR_NOTIFY, "Allows living players to hear spectators using text chat." );
 #ifdef TF2CE
-ConVar tfce_mapgamemode("tf2ce_mapgamemode", "0", FCVAR_NOTIFY, "");
+ConVar tfce_mapgamemode("tf2ce_mapgamemode", "0", FCVAR_NOTIFY | FCVAR_PROTECTED, "");
 #endif
 #endif
 
@@ -638,37 +638,25 @@ void CTFGameRules::SwapGamemode()
 void CTFGameRules::SwapGamemode_Internal()
 {
 	int gamemode = tfce_mapgamemode.GetInt();
-	int triggeredGamemode = gamemode;
 
 	if (gamemode == 0)
 	{
 		m_nGameType.Set(TF_GAMETYPE_UNDEFINED);
-		triggeredGamemode = TF_GAMETYPE_UNDEFINED;
 
 		CCaptureFlag* pFlag = dynamic_cast<CCaptureFlag*> (gEntList.FindEntityByClassname(NULL, "item_teamflag"));
 		if (pFlag)
 		{
 			m_nGameType.Set(TF_GAMETYPE_CTF);
-			triggeredGamemode = TF_GAMETYPE_CTF;
 		}
 
 		if (g_hControlPointMasters.Count())
 		{
 			m_nGameType.Set(TF_GAMETYPE_CP);
-			triggeredGamemode = TF_GAMETYPE_CP;
 		}
 	}
 	else
 	{
 		m_nGameType.Set(gamemode);
-		triggeredGamemode = gamemode;
-	}
-
-	IGameEvent* event = gameeventmanager->CreateEvent("gamemode_changed");
-	if (event)
-	{
-		event->SetInt("gamemode", triggeredGamemode);
-		gameeventmanager->FireEvent(event);
 	}
 
 	cvarVal = gamemode;
@@ -990,6 +978,25 @@ void CTFGameRules::InitTeams( void )
 	ResetFilePlayerClassInfoDatabase();
 }
 
+#ifdef TF2CE 
+//-----------------------------------------------------------------------------
+// Purpose: 
+// Input  : bForceRespawn - respawn player even if dead or dying
+//			bTeam - if true, only respawn the passed team
+//			iTeam  - team to respawn
+//-----------------------------------------------------------------------------
+void CTFGameRules::RespawnPlayers(bool bForceRespawn, bool bTeam /* = false */, int iTeam/* = TEAM_UNASSIGNED */)
+{
+	BaseClass::RespawnPlayers(bForceRespawn, bTeam, iTeam);
+
+	IGameEvent* event = gameeventmanager->CreateEvent("gamemode_changed");
+	if (event)
+	{
+		event->SetInt("gamemode", GetGameType());
+		gameeventmanager->FireEvent(event);
+	}
+}
+#endif
 
 ConVar tf_fixedup_damage_radius ( "tf_fixedup_damage_radius", "1", FCVAR_DEVELOPMENTONLY );
 //-----------------------------------------------------------------------------

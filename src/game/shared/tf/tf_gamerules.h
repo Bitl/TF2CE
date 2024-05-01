@@ -175,6 +175,7 @@ public:
 
 #ifdef TF2CE
 	virtual void	SwapGamemode();
+	virtual void	RespawnPlayers(bool bForceRespawn, bool bTeam = false, int iTeam = TEAM_UNASSIGNED);
 private:
 	virtual void	SwapGamemode_Internal();
 
