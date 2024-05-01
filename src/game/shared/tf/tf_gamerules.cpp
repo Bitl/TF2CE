@@ -320,7 +320,22 @@ void CTFGameRulesProxy::InputAddBlueTeamScore(inputdata_t& inputdata)
 {
 	TFTeamMgr()->AddTeamScore(TF_TEAM_BLUE, inputdata.value.Int());
 }
+#endif
 
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFGameRulesProxy::Activate()
+{
+	TFGameRules()->Activate();
+
+	ListenForGameEvent("gamemode_changed");
+
+	BaseClass::Activate();
+}
+#endif
+
+#ifdef TF2CE
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
@@ -335,34 +350,21 @@ void CTFGameRulesProxy::FireGameEvent(IGameEvent* event)
 
 		switch (iWinningTeam)
 		{
-			case TF_GAMETYPE_CTF:
-				m_OnGamemodeChangedCTF.FireOutput(this, this);
-				break;
-			case TF_GAMETYPE_CP:
-				m_OnGamemodeChangedCP.FireOutput(this, this);
-				break;
-			case TF_GAMETYPE_TDM:
-				m_OnGamemodeChangedTDM.FireOutput(this, this);
-				break;
-			case TF_GAMETYPE_UNDEFINED:
-			default:
-				break;
+		case TF_GAMETYPE_CTF:
+			m_OnGamemodeChangedCTF.FireOutput(this, this);
+			break;
+		case TF_GAMETYPE_CP:
+			m_OnGamemodeChangedCP.FireOutput(this, this);
+			break;
+		case TF_GAMETYPE_TDM:
+			m_OnGamemodeChangedTDM.FireOutput(this, this);
+			break;
+		case TF_GAMETYPE_UNDEFINED:
+		default:
+			break;
 		}
 	}
 #endif
-}
-#endif
-
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-void CTFGameRulesProxy::Activate()
-{
-	TFGameRules()->Activate();
-
-	ListenForGameEvent("gamemode_changed");
-
-	BaseClass::Activate();
 }
 #endif
 
