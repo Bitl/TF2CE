@@ -329,7 +329,9 @@ void CTFGameRulesProxy::Activate()
 {
 	TFGameRules()->Activate();
 
+#ifdef TF2CE
 	ListenForGameEvent("gamemode_changed");
+#endif
 
 	BaseClass::Activate();
 }
