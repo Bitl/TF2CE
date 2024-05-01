@@ -53,7 +53,11 @@ extern ConVar	tfce_mapgamemode;
 
 extern Vector g_TFClassViewVectors[];
 
+#ifdef TF2CE
+class CTFGameRulesProxy : public CTeamplayRoundBasedRulesProxy, public CGameEventListener
+#else
 class CTFGameRulesProxy : public CTeamplayRoundBasedRulesProxy
+#endif
 {
 public:
 	DECLARE_CLASS( CTFGameRulesProxy, CTeamplayRoundBasedRulesProxy );
@@ -70,7 +74,20 @@ public:
 	void	InputSetRedTeamRole( inputdata_t &inputdata );
 	void	InputSetBlueTeamRole( inputdata_t &inputdata );
 
+#ifdef TF2CE
+	void InputAddRedTeamScore(inputdata_t& inputdata);
+	void InputAddBlueTeamScore(inputdata_t& inputdata);
+
+	COutputEvent	m_OnGamemodeChangedCTF;
+	COutputEvent	m_OnGamemodeChangedCP;
+	COutputEvent	m_OnGamemodeChangedTDM;
+#endif
+
 	virtual void Activate();
+#endif
+
+#ifdef TF2CE
+	void FireGameEvent(IGameEvent* event);
 #endif
 };
 

@@ -222,6 +222,14 @@ BEGIN_DATADESC( CTFGameRulesProxy )
 	DEFINE_INPUTFUNC( FIELD_STRING, "SetBlueTeamGoalString", InputSetBlueTeamGoalString ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetRedTeamRole", InputSetRedTeamRole ),
 	DEFINE_INPUTFUNC( FIELD_INTEGER, "SetBlueTeamRole", InputSetBlueTeamRole ),
+#ifdef TF2CE
+	DEFINE_INPUTFUNC(FIELD_INTEGER, "AddRedTeamScore", InputAddRedTeamScore),
+	DEFINE_INPUTFUNC(FIELD_INTEGER, "AddBlueTeamScore", InputAddBlueTeamScore),
+
+	DEFINE_OUTPUT(m_OnGamemodeChangedCTF, "OnGamemodeChangedCTF"),
+	DEFINE_OUTPUT(m_OnGamemodeChangedCP, "OnGamemodeChangedCP"),
+	DEFINE_OUTPUT(m_OnGamemodeChangedTDM, "OnGamemodeChangedTDM"),
+#endif
 END_DATADESC()
 
 //-----------------------------------------------------------------------------
@@ -296,12 +304,63 @@ void CTFGameRulesProxy::InputSetBlueTeamRole( inputdata_t &inputdata )
 	}
 }
 
+#ifdef TF2CE
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFGameRulesProxy::InputAddRedTeamScore(inputdata_t& inputdata)
+{
+	TFTeamMgr()->AddTeamScore(TF_TEAM_RED, inputdata.value.Int());
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFGameRulesProxy::InputAddBlueTeamScore(inputdata_t& inputdata)
+{
+	TFTeamMgr()->AddTeamScore(TF_TEAM_BLUE, inputdata.value.Int());
+}
+
+//-----------------------------------------------------------------------------
+// Purpose: 
+//-----------------------------------------------------------------------------
+void CTFGameRulesProxy::FireGameEvent(IGameEvent* event)
+{
+#ifdef GAME_DLL
+	const char* pszEventName = event->GetName();
+
+	if (FStrEq(pszEventName, "gamemode_changed"))
+	{
+		int iWinningTeam = event->GetInt("gamemode");
+
+		switch (iWinningTeam)
+		{
+			case TF_GAMETYPE_CTF:
+				m_OnGamemodeChangedCTF.FireOutput(this, this);
+				break;
+			case TF_GAMETYPE_CP:
+				m_OnGamemodeChangedCP.FireOutput(this, this);
+				break;
+			case TF_GAMETYPE_TDM:
+				m_OnGamemodeChangedTDM.FireOutput(this, this);
+				break;
+			case TF_GAMETYPE_UNDEFINED:
+			default:
+				break;
+		}
+	}
+#endif
+}
+#endif
+
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
 void CTFGameRulesProxy::Activate()
 {
 	TFGameRules()->Activate();
+
+	ListenForGameEvent("gamemode_changed");
 
 	BaseClass::Activate();
 }
@@ -556,25 +615,37 @@ void CTFGameRules::SwapGamemode()
 void CTFGameRules::SwapGamemode_Internal()
 {
 	int gamemode = tfce_mapgamemode.GetInt();
+	int triggeredGamemode = gamemode;
 
 	if (gamemode == 0)
 	{
 		m_nGameType.Set(TF_GAMETYPE_UNDEFINED);
+		triggeredGamemode = TF_GAMETYPE_UNDEFINED;
 
 		CCaptureFlag* pFlag = dynamic_cast<CCaptureFlag*> (gEntList.FindEntityByClassname(NULL, "item_teamflag"));
 		if (pFlag)
 		{
 			m_nGameType.Set(TF_GAMETYPE_CTF);
+			triggeredGamemode = TF_GAMETYPE_CTF;
 		}
 
 		if (g_hControlPointMasters.Count())
 		{
 			m_nGameType.Set(TF_GAMETYPE_CP);
+			triggeredGamemode = TF_GAMETYPE_CP;
 		}
 	}
 	else
 	{
 		m_nGameType.Set(gamemode);
+		triggeredGamemode = gamemode;
+	}
+
+	IGameEvent* event = gameeventmanager->CreateEvent("gamemode_changed");
+	if (event)
+	{
+		event->SetInt("gamemode", triggeredGamemode);
+		gameeventmanager->FireEvent(event);
 	}
 
 	cvarVal = gamemode;
