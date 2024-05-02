@@ -6,6 +6,7 @@
 //=============================================================================
 
 #include "cbase.h"
+
 #include "tf_player.h"
 #include "tf_gamerules.h"
 #include "tf_gamestats.h"
@@ -3764,6 +3765,63 @@ void CTFPlayer::StateEnterWELCOME( void )
 		m_bSeenRoundInfo = true;
 
 		ChangeTeam( TEAM_SPECTATOR );
+
+#ifdef TF2CE
+		/* mostly from GameUI */
+		char path[512];
+		Q_snprintf(path, sizeof(path), "sound/ui/gamestartup*.mp3");
+		Q_FixSlashes(path);
+		CUtlVector<char*> fileNames;
+		FileFindHandle_t fh;
+
+		char const* fn = g_pFullFileSystem->FindFirstEx(path, "MOD", &fh);
+		if (fn)
+		{
+			do
+			{
+				char ext[10];
+				Q_ExtractFileExtension(fn, ext, sizeof(ext));
+
+				if (!Q_stricmp(ext, "mp3"))
+				{
+					char temp[512];
+					{
+						Q_snprintf(temp, sizeof(temp), "ui/%s", fn);
+					}
+
+					char* found = new char[strlen(temp) + 1];
+					Q_strncpy(found, temp, strlen(temp) + 1);
+
+					Q_FixSlashes(found);
+					fileNames.AddToTail(found);
+				}
+
+				fn = g_pFullFileSystem->FindNext(fh);
+
+			} while (fn);
+
+			g_pFullFileSystem->FindClose(fh);
+		}
+
+		if (fileNames.Count())
+		{
+			int index = RandomInt(0, fileNames.Count() - 1);
+			const char* pSoundFile = NULL;
+
+			if (fileNames.IsValidIndex(index) && fileNames[index])
+				pSoundFile = fileNames[index];
+
+			if (pSoundFile)
+			{
+				if (PrecacheSound(pSoundFile))
+				{
+					UTIL_EmitAmbientSound(entindex(), GetAbsOrigin(), pSoundFile, 25, SNDLVL_GUNFIRE, 0, PITCH_NORM);
+				}
+			}
+		}
+
+		fileNames.PurgeAndDeleteElements();
+#endif
 	}
 	else if ( (TFGameRules() && TFGameRules()->IsLoadingBugBaitReport()) )
 	{
@@ -3823,6 +3881,7 @@ void CTFPlayer::StateEnterACTIVE()
 	SetMoveType( MOVETYPE_WALK );
 	RemoveEffects( EF_NODRAW | EF_NOSHADOW );
 	RemoveSolidFlags( FSOLID_NOT_SOLID );
+
 	m_Local.m_iHideHUD = 0;
 	PhysObjectWake();
 
