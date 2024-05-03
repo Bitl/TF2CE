@@ -641,7 +641,7 @@ void CTFGameRules::SwapGamemode_Internal()
 
 	if (gamemode == 0)
 	{
-		m_nGameType.Set(TF_GAMETYPE_UNDEFINED);
+		m_nGameType.Set(TF_GAMETYPE_TDM);
 
 		CCaptureFlag* pFlag = dynamic_cast<CCaptureFlag*> (gEntList.FindEntityByClassname(NULL, "item_teamflag"));
 		if (pFlag)
@@ -657,6 +657,13 @@ void CTFGameRules::SwapGamemode_Internal()
 	else
 	{
 		m_nGameType.Set(gamemode);
+	}
+
+	IGameEvent* event = gameeventmanager->CreateEvent("gamemode_changed");
+	if (event)
+	{
+		event->SetInt("gamemode", GetGameType());
+		gameeventmanager->FireEvent(event);
 	}
 
 	cvarVal = gamemode;
