@@ -2191,4 +2191,16 @@ IMaterial *CWeaponInvisProxy::GetMaterial()
 
 EXPOSE_INTERFACE( CWeaponInvisProxy, IMaterialProxy, "weapon_invis" IMATERIAL_PROXY_INTERFACE_VERSION );
 
+#ifdef TF2CE_CLIENT
+class CWeaponInvisProxy2 : public CWeaponInvisProxy
+{
+public:
+
+	CWeaponInvisProxy2(void) {}
+	virtual ~CWeaponInvisProxy2(void) {}
+};
+
+EXPOSE_INTERFACE( CWeaponInvisProxy2, IMaterialProxy, "invis" IMATERIAL_PROXY_INTERFACE_VERSION );
+#endif
+
 #endif // CLIENT_DLL

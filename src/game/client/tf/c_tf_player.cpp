@@ -900,6 +900,36 @@ public:
 
 EXPOSE_INTERFACE( CProxyBurnLevel, IMaterialProxy, "BurnLevel" IMATERIAL_PROXY_INTERFACE_VERSION );
 
+#ifdef TF2CE_CLIENT
+//-----------------------------------------------------------------------------
+// Purpose: Used for nulling out live tf2 proxies
+//-----------------------------------------------------------------------------
+class CProxyNullYellow : public CResultProxy
+{
+public:
+	void OnBind(void* pC_BaseEntity)
+	{
+		Assert(m_pResult);
+
+		if (!pC_BaseEntity)
+			return;
+
+		C_BaseEntity* pEntity = BindArgToEntity(pC_BaseEntity);
+		if (!pEntity)
+			return;
+
+		m_pResult->SetFloatValue(1.0f);
+
+		if (ToolsEnabled())
+		{
+			ToolFramework_RecordMaterialParams(GetMaterial());
+		}
+	}
+};
+
+EXPOSE_INTERFACE(CProxyNullYellow, IMaterialProxy, "YellowLevel" IMATERIAL_PROXY_INTERFACE_VERSION);
+#endif //TF2CE_CLIENT
+
 //-----------------------------------------------------------------------------
 // Purpose: RecvProxy that converts the Player's object UtlVector to entindexes
 //-----------------------------------------------------------------------------
