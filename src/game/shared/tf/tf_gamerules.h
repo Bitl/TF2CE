@@ -77,6 +77,7 @@ public:
 #ifdef TF2CE
 	void InputAddRedTeamScore(inputdata_t& inputdata);
 	void InputAddBlueTeamScore(inputdata_t& inputdata);
+	void InputSetMapGamemode(inputdata_t& inputdata);
 
 	COutputEvent	m_OnGamemodeChangedCTF;
 	COutputEvent	m_OnGamemodeChangedCP;
@@ -174,10 +175,10 @@ public:
 	virtual void	Activate();
 
 #ifdef TF2CE
-	virtual void	SwapGamemode();
+	virtual void	SwapGamemode(int gamemodeOverride = -1);
 	virtual void	RespawnPlayers(bool bForceRespawn, bool bTeam = false, int iTeam = TEAM_UNASSIGNED);
 private:
-	virtual void	SwapGamemode_Internal();
+	virtual void	SwapGamemode_Internal(int gamemodeOverride = -1);
 
 	int cvarVal;
 public:
