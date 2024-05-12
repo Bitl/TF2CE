@@ -26,14 +26,18 @@ CBaseEntity* MoveToRandomSpot( CBaseEntity *pEnt )
 {
 	if ( pEnt )
 	{
-		CBasePlayer *pLocalPlayer = UTIL_GetLocalPlayer();
-		if ( pLocalPlayer )
-		{			
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+		UTIL_SetOrigin(pEnt, GetRandomSpot());
+#else
+		CBasePlayer* pLocalPlayer = UTIL_GetLocalPlayer();
+		if (pLocalPlayer)
+		{
 			Vector vForward;
-			pLocalPlayer->EyeVectors(&vForward );
+			pLocalPlayer->EyeVectors(&vForward);
 
-			UTIL_SetOrigin( pEnt, GetRandomSpot() );
+			UTIL_SetOrigin(pEnt, GetRandomSpot());
 		}
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 	}
 
 	return pEnt;

@@ -289,7 +289,7 @@ void ReadUsercmd( bf_read *buf, CUserCmd *move, CUserCmd *from )
 		move->mousedy = buf->ReadShort();
 	}
 
-#if defined( HL2_DLL )
+#if defined( HL2_DLL ) || defined (TF2CE)
 	if ( buf->ReadOneBit() )
 	{
 		move->entitygroundcontact.SetCount( buf->ReadShort() );

@@ -389,7 +389,12 @@ void CEnvSoundscape::DrawDebugGeometryOverlays( void )
 {
 	if ( m_debugOverlays & (OVERLAY_BBOX_BIT|OVERLAY_PIVOT_BIT|OVERLAY_ABSBOX_BIT) )
 	{
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+		CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+#else
+		// Don't use GetLocalPlayer(), because that prevents multiplayer games using this for testing with a single client in the game
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(1);
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 		if ( pPlayer )
 		{
 			audioparams_t &audio = pPlayer->GetAudioParams();

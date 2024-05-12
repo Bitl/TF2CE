@@ -3710,9 +3710,13 @@ CBaseEntity *CSceneEntity::FindNamedEntity( const char *name, CBaseEntity *pActo
 {
 	CBaseEntity *entity = NULL;
 
-	if ( !stricmp( name, "Player" ) || !stricmp( name, "!player" ))
+	if (!stricmp(name, "Player") || !stricmp(name, "!player"))
 	{
-		entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+		entity = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+		entity = (gpGlobals->maxClients == 1) ? (CBaseEntity*)UTIL_GetLocalPlayer() : NULL;
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 	}
 	else if ( !stricmp( name, "!target1" ) )
 	{
@@ -3837,9 +3841,13 @@ CBaseEntity *CSceneEntity::FindNamedEntityClosest( const char *name, CBaseEntity
 	{
 		return m_hActivator;
 	} 
-	else if ( !stricmp( name, "Player" ) || !stricmp( name, "!player" ))
+	else if (!stricmp(name, "Player") || !stricmp(name, "!player"))
 	{
-		entity = ( gpGlobals->maxClients == 1 ) ? ( CBaseEntity * )UTIL_GetLocalPlayer() : NULL;
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+		entity = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+		entity = (gpGlobals->maxClients == 1) ? (CBaseEntity*)UTIL_GetLocalPlayer() : NULL;
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 		return entity;
 	}
 	else if ( !stricmp( name, "!target1" ) )

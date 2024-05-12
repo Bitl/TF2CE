@@ -116,10 +116,14 @@ void CMessageEntity::UpdateOnRemove()
 //-----------------------------------------
 void CMessageEntity::Think( void )
 {
-	SetNextThink( gpGlobals->curtime + 0.1f );
+	SetNextThink(gpGlobals->curtime + 0.1f);
 
 	// check for player distance
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+	CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 	if ( !pPlayer || ( pPlayer->GetFlags() & FL_NOTARGET ) )
 		return;

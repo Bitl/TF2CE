@@ -2842,7 +2842,7 @@ CBaseEntity *CBaseCombatCharacter::Weapon_FindUsable( const Vector &range )
 {
 	bool bConservative = false;
 
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 	if( hl2_episodic.GetBool() && !GetActiveWeapon() )
 	{
 		// Unarmed citizens are conservative in their weapon finding
@@ -3043,7 +3043,7 @@ float CBaseCombatCharacter::CalculatePhysicsStressDamage( vphysics_objectstress_
 
 void CBaseCombatCharacter::ApplyStressDamage( IPhysicsObject *pPhysics, bool bRequireLargeObject )
 {
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 	if( Classify() == CLASS_PLAYER_ALLY || Classify() == CLASS_PLAYER_ALLY_VITAL )
 	{
 		// Bypass stress completely for allies and vitals.
