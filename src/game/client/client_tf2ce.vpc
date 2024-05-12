@@ -14,7 +14,7 @@ $Configuration
 	$Compiler
 	{
 		$AdditionalIncludeDirectories	".\hl2;.\tf;.\tf\vgui;$SRCDIR\game\shared\Multiplayer;$SRCDIR\game\shared\tf;$BASE"
-		$PreprocessorDefinitions		"$BASE;TF_MOD_CLIENT;TF2CE_CLIENT;TF2CE"
+		$PreprocessorDefinitions		"$BASE;TF_MOD_CLIENT;TF2CE_CLIENT;TF2CE;OBCO_Enable_Fixed_Multiplayer_AI"
 	}
 }
 

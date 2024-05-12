@@ -28,6 +28,11 @@
 #include "hl2_gamerules.h"
 #endif // HL2_DLL
 
+#ifdef TF2CE
+#include "ai_interactions.h"
+#include "tf_gamerules.h"
+#endif // HL2_DLL
+
 #include "ai_network.h"
 #include "ai_networkmanager.h"
 #include "ai_pathfinder.h"
@@ -74,6 +79,9 @@
 #include "npc_bullseye.h"
 #include "hl2_player.h"
 #include "weapon_physcannon.h"
+#endif
+#ifdef TF2CE
+#include "npc_bullseye.h"
 #endif
 #include "waterbullet.h"
 #include "in_buttons.h"
@@ -5945,7 +5953,7 @@ void CAI_BaseNPC::CheckTarget( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 CAI_BaseNPC *CAI_BaseNPC::CreateCustomTarget( const Vector &vecOrigin, float duration )
 {
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 	CNPC_Bullseye *pTarget = (CNPC_Bullseye*)CreateEntityByName( "npc_bullseye" );
 
 	ASSERT( pTarget != NULL );
@@ -9587,7 +9595,7 @@ Vector CAI_BaseNPC::GetShootEnemyDir( const Vector &shootOrigin, bool bNoisy )
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::CollectShotStats( const Vector &vecShootOrigin, const Vector &vecShootDir )
 {
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 	if( ai_shot_stats.GetBool() != 0 && GetEnemy()->IsPlayer() )
 	{
 		int iterations = ai_shot_stats_term.GetInt();
@@ -9628,7 +9636,7 @@ void CAI_BaseNPC::CollectShotStats( const Vector &vecShootOrigin, const Vector &
 #endif
 }
 
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 //-----------------------------------------------------------------------------
 // Purpose: Return the actual position the NPC wants to fire at when it's trying
 //			to hit it's current enemy.
@@ -11826,7 +11834,7 @@ void CAI_BaseNPC::CleanupScriptsOnTeleport( bool bEnrouteAsWell )
 //-----------------------------------------------------------------------------
 bool CAI_BaseNPC::HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt)
 {
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 	if ( interactionType == g_interactionBarnacleVictimGrab )
 	{
 		// Make the victim stop thinking so they're as good as dead without 
@@ -14078,7 +14086,7 @@ void CAI_BaseNPC::PlayerHasIlluminatedNPC( CBasePlayer *pPlayer, float flDot )
 		{
 			// Only do this in alyx darkness mode
 #ifdef OBCO_Enable_Fixed_Multiplayer_AI
-			if (TFGameRules()->IsAlyxInDarknessMode())
+			if (HL2MPGameRules()->IsAlyxInDarknessMode())
 #else
 			if (HL2GameRules()->IsAlyxInDarknessMode())
 #endif //OBCO_Enable_Fixed_Multiplayer_AI

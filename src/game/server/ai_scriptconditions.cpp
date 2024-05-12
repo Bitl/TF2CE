@@ -473,7 +473,7 @@ void CAI_ScriptConditions::EvaluationThink()
 
 	int iActorsDone = 0;
 
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 #ifdef OBCO_Enable_Fixed_Multiplayer_AI
 	/*	if( AI_GetSinglePlayer()->GetFlags() & FL_NOTARGET )
 	{
