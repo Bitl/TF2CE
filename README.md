@@ -1,8 +1,6 @@
 Team Fortress 2
 =====
 
-[![Build status](https://ci.appveyor.com/api/projects/status/1qx349wcxa5eenjk/branch/master?svg=true)](https://ci.appveyor.com/project/NicknineTheEagle/tf2-base/branch/master)
-
 This is the old Team Fortress 2 source code from late January 2008 ported to Source Engine 2013. This ensures the game has all the latest engine features and security fixes. No new features will be added to the code. No bugs will be fixed with the exception of crashes and bugs that were not in the original 2008 build of the game.
 
 You can find a link to the playable build on the latest release's page: https://github.com/NicknineTheEagle/TF2-Base/releases/latest
