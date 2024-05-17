@@ -400,11 +400,7 @@ void PlayImpactSound( CBaseEntity *pEntity, trace_t &tr, Vector &vecServerOrigin
 		else
 		{
 			CLocalPlayerFilter filter;
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-			C_BaseEntity::EmitSound(filter, NULL, pbulletImpactSoundName, /*pdata->soundhandles.bulletImpact,*/ &vecOrigin);
-#else
-			C_BaseEntity::EmitSound(filter, NULL, pbulletImpactSoundName, pdata->soundhandles.bulletImpact, &vecOrigin);
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+			C_BaseEntity::EmitSound( filter, NULL, pbulletImpactSoundName, pdata->soundhandles.bulletImpact, &vecOrigin );
 		}
 
 		return;

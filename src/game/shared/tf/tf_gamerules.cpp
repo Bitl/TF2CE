@@ -225,7 +225,6 @@ BEGIN_DATADESC( CTFGameRulesProxy )
 #ifdef TF2CE
 	DEFINE_INPUTFUNC(FIELD_INTEGER, "AddRedTeamScore", InputAddRedTeamScore),
 	DEFINE_INPUTFUNC(FIELD_INTEGER, "AddBlueTeamScore", InputAddBlueTeamScore),
-	DEFINE_INPUTFUNC(FIELD_INTEGER, "SetMapGamemode", InputSetRedTeamRole),
 
 	DEFINE_OUTPUT(m_OnGamemodeChangedCTF, "OnGamemodeChangedCTF"),
 	DEFINE_OUTPUT(m_OnGamemodeChangedCP, "OnGamemodeChangedCP"),
@@ -322,11 +321,6 @@ void CTFGameRulesProxy::InputAddRedTeamScore(inputdata_t& inputdata)
 void CTFGameRulesProxy::InputAddBlueTeamScore(inputdata_t& inputdata)
 {
 	TFTeamMgr()->AddTeamScore(TF_TEAM_BLUE, inputdata.value.Int());
-}
-
-void CTFGameRulesProxy::InputSetMapGamemode(inputdata_t& inputdata)
-{
-	TFGameRules()->SwapGamemode(inputdata.value.Int());
 }
 #endif
 
@@ -632,23 +626,18 @@ void CTFGameRules::Activate()
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CTFGameRules::SwapGamemode(int gamemodeOverride)
+void CTFGameRules::SwapGamemode()
 {
-	SwapGamemode_Internal(gamemodeOverride);
+	SwapGamemode_Internal();
 	RoundRespawn();
 }
 
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-void CTFGameRules::SwapGamemode_Internal(int gamemodeOverride)
+void CTFGameRules::SwapGamemode_Internal()
 {
 	int gamemode = tfce_mapgamemode.GetInt();
-
-	if (gamemodeOverride != -1)
-	{
-		gamemode = gamemodeOverride;
-	}
 
 	if (gamemode == 0)
 	{

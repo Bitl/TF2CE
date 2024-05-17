@@ -122,11 +122,7 @@ void C_ColorCorrection::ClientThink()
 		return;
 	}
 
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	CBaseEntity* pPlayer = C_BasePlayer::GetLocalPlayer();
-#else
-	CBaseEntity* pPlayer = UTIL_PlayerByIndex(1);
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+	C_BaseEntity *pPlayer = C_BasePlayer::GetLocalPlayer();
 	if( !pPlayer )
 		return;
 

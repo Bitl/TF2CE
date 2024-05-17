@@ -1916,12 +1916,7 @@ void CBaseCombatCharacter::Weapon_Drop( CBaseCombatWeapon *pWeapon, const Vector
 			{
 				// Drop enough ammo to kill 2 of me.
 				// Figure out how much damage one piece of this type of ammo does to this type of enemy.
-				// Figure out how much damage one piece of this type of ammo does to this type of enemy.
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI				
-				float flAmmoDamage = g_pGameRules->GetAmmoDamage(UTIL_GetNearestPlayer(GetAbsOrigin()), this, pWeapon->GetPrimaryAmmoType());
-#else
-				float flAmmoDamage = g_pGameRules->GetAmmoDamage(UTIL_PlayerByIndex(1), this, pWeapon->GetPrimaryAmmoType());
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+				float flAmmoDamage = g_pGameRules->GetAmmoDamage( UTIL_PlayerByIndex(1), this, pWeapon->GetPrimaryAmmoType() );
 				pWeapon->m_iClip1 = (GetMaxHealth() / flAmmoDamage) * 2;
 			}
 		}
@@ -3279,11 +3274,7 @@ CBaseEntity *CBaseCombatCharacter::FindMissTarget( void )
 	CBaseEntity *pMissCandidates[ MAX_MISS_CANDIDATES ];
 	int numMissCandidates = 0;
 
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	CBasePlayer* pPlayer = UTIL_GetNearestVisiblePlayer(this);
-#else
-	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 	CBaseEntity *pEnts[256];
 	Vector		radius( 100, 100, 100);
 	Vector		vecSource = GetAbsOrigin();
