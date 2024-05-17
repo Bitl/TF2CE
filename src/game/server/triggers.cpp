@@ -3059,7 +3059,6 @@ void CTriggerCamera::Enable( void )
 #else
 		m_hPlayer = UTIL_GetLocalPlayer();
 #endif //obco_Enable_Fixed_Multiplayer_AI
-	}
 
 	if ( !m_hPlayer )
 	{

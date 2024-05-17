@@ -5851,29 +5851,25 @@ void CTFPlayer::NoteSpokeVoiceCommand( const char *pszScenePlayed )
 	m_flNextVoiceCommandTime = gpGlobals->curtime + min( GetSceneDuration( pszScenePlayed ), tf_max_voice_speak_delay.GetFloat() );
 }
 
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
 //-----------------------------------------------------------------------------
 // Purpose: 
 //-----------------------------------------------------------------------------
-bool CTFPlayer::WantsLagCompensationOnEntity(const CBaseEntity* pPlayer, const CUserCmd* pCmd, const CBitVec<MAX_EDICTS>* pEntityTransmitBits) const
+bool CTFPlayer::WantsLagCompensationOnEntity( const CBasePlayer *pPlayer, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits ) const
 {
-	if (!pPlayer->IsPlayer())
-		return BaseClass::WantsLagCompensationOnEntity(pPlayer, pCmd, pEntityTransmitBits);
-
 	bool bIsMedic = false;
 
 	//Do Lag comp on medics trying to heal team mates.
-	if (IsPlayerClass(TF_CLASS_MEDIC) == true)
+	if ( IsPlayerClass( TF_CLASS_MEDIC ) == true )
 	{
 		bIsMedic = true;
 
-		if (pPlayer->GetTeamNumber() == GetTeamNumber())
+		if ( pPlayer->GetTeamNumber() == GetTeamNumber()  )
 		{
-			CWeaponMedigun* pWeapon = dynamic_cast <CWeaponMedigun*>(GetActiveWeapon());
+			CWeaponMedigun *pWeapon = dynamic_cast <CWeaponMedigun*>( GetActiveWeapon() );
 
-			if (pWeapon && pWeapon->GetHealTarget())
+			if ( pWeapon && pWeapon->GetHealTarget() )
 			{
-				if (pWeapon->GetHealTarget() == pPlayer)
+				if ( pWeapon->GetHealTarget() == pPlayer )
 					return true;
 				else
 					return false;
@@ -5881,96 +5877,37 @@ bool CTFPlayer::WantsLagCompensationOnEntity(const CBaseEntity* pPlayer, const C
 		}
 	}
 
-	if (pPlayer->GetTeamNumber() == GetTeamNumber() && bIsMedic == false)
+	if ( pPlayer->GetTeamNumber() == GetTeamNumber() && bIsMedic == false )
 		return false;
-
+	
 	// If this entity hasn't been transmitted to us and acked, then don't bother lag compensating it.
-	if (pEntityTransmitBits && !pEntityTransmitBits->Get(pPlayer->entindex()))
+	if ( pEntityTransmitBits && !pEntityTransmitBits->Get( pPlayer->entindex() ) )
 		return false;
 
-	const Vector& vMyOrigin = GetAbsOrigin();
-	const Vector& vHisOrigin = pPlayer->GetAbsOrigin();
-
-	// get max distance player could have moved within max lag compensation time, 
-	// multiply by 1.5 to to avoid "dead zones"  (sqrt(2) would be the exact value)
-	float maxDistance = 1.5 * pPlayer->m_flSpeed * sv_maxunlag.GetFloat();
-
-	// If the player is within this distance, lag compensate them in case they're running past us.
-	if (vHisOrigin.DistTo(vMyOrigin) < maxDistance)
-		return true;
-
-	// If their origin is not within a 45 degree cone in front of us, no need to lag compensate.
-	Vector vForward;
-	AngleVectors(pCmd->viewangles, &vForward);
-
-	Vector vDiff = vHisOrigin - vMyOrigin;
-	VectorNormalize(vDiff);
-
-	float flCosAngle = 0.707107f;	// 45 degree angle
-	if (vForward.Dot(vDiff) < flCosAngle)
-		return false;
-
-	return true;
-}
-#else
-//-----------------------------------------------------------------------------
-// Purpose: 
-//-----------------------------------------------------------------------------
-bool CTFPlayer::WantsLagCompensationOnEntity(const CBasePlayer* pPlayer, const CUserCmd* pCmd, const CBitVec<MAX_EDICTS>* pEntityTransmitBits) const
-{
-	bool bIsMedic = false;
-
-	//Do Lag comp on medics trying to heal team mates.
-	if (IsPlayerClass(TF_CLASS_MEDIC) == true)
-	{
-		bIsMedic = true;
-
-		if (pPlayer->GetTeamNumber() == GetTeamNumber())
-		{
-			CWeaponMedigun* pWeapon = dynamic_cast <CWeaponMedigun*>(GetActiveWeapon());
-
-			if (pWeapon && pWeapon->GetHealTarget())
-			{
-				if (pWeapon->GetHealTarget() == pPlayer)
-					return true;
-				else
-					return false;
-			}
-		}
-	}
-
-	if (pPlayer->GetTeamNumber() == GetTeamNumber() && bIsMedic == false)
-		return false;
-
-	// If this entity hasn't been transmitted to us and acked, then don't bother lag compensating it.
-	if (pEntityTransmitBits && !pEntityTransmitBits->Get(pPlayer->entindex()))
-		return false;
-
-	const Vector& vMyOrigin = GetAbsOrigin();
-	const Vector& vHisOrigin = pPlayer->GetAbsOrigin();
+	const Vector &vMyOrigin = GetAbsOrigin();
+	const Vector &vHisOrigin = pPlayer->GetAbsOrigin();
 
 	// get max distance player could have moved within max lag compensation time, 
 	// multiply by 1.5 to to avoid "dead zones"  (sqrt(2) would be the exact value)
 	float maxDistance = 1.5 * pPlayer->MaxSpeed() * sv_maxunlag.GetFloat();
 
 	// If the player is within this distance, lag compensate them in case they're running past us.
-	if (vHisOrigin.DistTo(vMyOrigin) < maxDistance)
+	if ( vHisOrigin.DistTo( vMyOrigin ) < maxDistance )
 		return true;
 
 	// If their origin is not within a 45 degree cone in front of us, no need to lag compensate.
 	Vector vForward;
-	AngleVectors(pCmd->viewangles, &vForward);
+	AngleVectors( pCmd->viewangles, &vForward );
 
 	Vector vDiff = vHisOrigin - vMyOrigin;
-	VectorNormalize(vDiff);
+	VectorNormalize( vDiff );
 
 	float flCosAngle = 0.707107f;	// 45 degree angle
-	if (vForward.Dot(vDiff) < flCosAngle)
+	if ( vForward.Dot( vDiff ) < flCosAngle )
 		return false;
 
 	return true;
 }
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 //-----------------------------------------------------------------------------
 // Purpose: 

@@ -775,10 +775,6 @@ void UTIL_Tracer( const Vector &vecStart, const Vector &vecEnd, int iEntIndex,
 
 void UTIL_BloodDrips( const Vector &origin, const Vector &direction, int color, int amount )
 {
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	IPredictionSystem::SuppressHostEvents(NULL);
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
-
 	if ( !UTIL_ShouldShowBlood( color ) )
 		return;
 
@@ -788,13 +784,11 @@ void UTIL_BloodDrips( const Vector &origin, const Vector &direction, int color, 
 	if ( g_Language.GetInt() == LANGUAGE_GERMAN && color == BLOOD_COLOR_RED )
 		color = 0;
 
-#ifndef OBCO_Enable_Fixed_Multiplayer_AI
-	if (g_pGameRules->IsMultiplayer())
+	if ( g_pGameRules->IsMultiplayer() )
 	{
 		// scale up blood effect in multiplayer for better visibility
 		amount *= 5;
 	}
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 	if ( amount > 255 )
 		amount = 255;

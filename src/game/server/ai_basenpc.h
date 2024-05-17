@@ -446,10 +446,6 @@ float ChangeDistance( float flInterval, float flGoalDistance, float flGoalVeloci
 //
 //=============================================================================
 
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-#define MAX_AIS	256 
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
-
 class CAI_Manager
 {
 public:
@@ -468,12 +464,10 @@ public:
 	bool FindAI( CAI_BaseNPC *pAI )	{ return ( m_AIs.Find( pAI ) != m_AIs.InvalidIndex() ); }
 	
 private:
-#ifndef OBCO_Enable_Fixed_Multiplayer_AI
 	enum
 	{
 		MAX_AIS = 256
 	};
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 	
 	typedef CUtlVector<CAI_BaseNPC *> CAIArray;
 	
