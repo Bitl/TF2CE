@@ -454,7 +454,7 @@ void CAI_PlayerAlly::GatherEnemyConditions( CBaseEntity *pEnemy )
 	BaseClass::GatherEnemyConditions( pEnemy );
 	if ( GetLastEnemyTime() == 0 || gpGlobals->curtime - GetLastEnemyTime() > 30 )
 	{
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 		if ( HasCondition( COND_SEE_ENEMY ) && ( pEnemy->Classify() != CLASS_BULLSEYE ) )
 		{
 			if( Classify() == CLASS_PLAYER_ALLY_VITAL && hl2_episodic.GetBool() )
@@ -517,7 +517,7 @@ void CAI_PlayerAlly::PrescheduleThink( void )
 {
 	BaseClass::PrescheduleThink();
 
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 	// Vital allies regenerate
 	if( GetHealth() >= GetMaxHealth() )
 	{

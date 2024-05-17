@@ -295,9 +295,15 @@ IMotionEvent::simresult_e CPhysicsNPCSolver::Simulate( IPhysicsMotionController 
 	{
 		const float PUSH_SPEED = 150.0f;
 
-		if ( pObject->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
+		if (pObject->GetGameFlags() & FVPHYSICS_PLAYER_HELD)
 		{
-			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+			Vector origin;
+			pObject->GetPosition(&origin, NULL);
+			CBasePlayer* pPlayer = UTIL_GetNearestPlayer(origin);
+#else
+			CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 			if ( pPlayer )
 			{
 				pPlayer->ForceDropOfCarriedPhysObjects( m_hEntity );

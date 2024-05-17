@@ -1392,7 +1392,7 @@ void CAI_FollowBehavior::StartTask( const Task_t *pTask )
 
 					bool bIsEpisodicVitalAlly;
 					
-#ifdef HL2_DLL
+#if defined (HL2_DLL) || defined (TF2CE)
 					bIsEpisodicVitalAlly = (hl2_episodic.GetBool() && GetOuter()->Classify() == CLASS_PLAYER_ALLY_VITAL);
 #else
 					bIsEpisodicVitalAlly = false;
