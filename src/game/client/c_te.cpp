@@ -668,11 +668,11 @@ public:
 			TE_Explosion( filter, 0.0f, pKeyValues );
 			break;
 
-#if defined (HL2_DLL) || defined (TF2CE)
+/*#if defined (HL2_DLL) || defined (TF2CE)
 		case TE_CONCUSSIVE_EXPLOSION:
 			TE_ConcussiveExplosion( filter, 0.0f, pKeyValues );
 			break;
-#endif
+#endif*/
 		}
 
 		SuppressParticleEffects( false );

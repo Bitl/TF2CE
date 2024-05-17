@@ -28,10 +28,10 @@
 #include "hl2_gamerules.h"
 #endif // HL2_DLL
 
-#ifdef TF2CE
+/*#ifdef TF2CE
 #include "ai_interactions.h"
 #include "tf_gamerules.h"
-#endif // HL2_DLL
+#endif // HL2_DLL*/
 
 #include "ai_network.h"
 #include "ai_networkmanager.h"
@@ -80,9 +80,9 @@
 #include "hl2_player.h"
 #include "weapon_physcannon.h"
 #endif
-#ifdef TF2CE
+/*#ifdef TF2CE
 #include "npc_bullseye.h"
-#endif
+#endif*/
 #include "waterbullet.h"
 #include "in_buttons.h"
 #include "eventlist.h"
@@ -1488,7 +1488,7 @@ void CAI_BaseNPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::FireBullets( const FireBulletsInfo_t &info )
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+/*#if defined (HL2_DLL) || defined (TF2CE)
 	// If we're shooting at a bullseye, become perfectly accurate if the bullseye demands it
 	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_BULLSEYE )
 	{
@@ -1501,7 +1501,7 @@ void CAI_BaseNPC::FireBullets( const FireBulletsInfo_t &info )
 			return;
 		}
 	}
-#endif
+#endif*/
 
 	BaseClass::FireBullets( info );
 }
@@ -5953,7 +5953,7 @@ void CAI_BaseNPC::CheckTarget( CBaseEntity *pTarget )
 //-----------------------------------------------------------------------------
 CAI_BaseNPC *CAI_BaseNPC::CreateCustomTarget( const Vector &vecOrigin, float duration )
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+/*#if defined (HL2_DLL) || defined (TF2CE)
 	CNPC_Bullseye *pTarget = (CNPC_Bullseye*)CreateEntityByName( "npc_bullseye" );
 
 	ASSERT( pTarget != NULL );
@@ -5973,9 +5973,9 @@ CAI_BaseNPC *CAI_BaseNPC::CreateCustomTarget( const Vector &vecOrigin, float dur
 	}
 
 	return pTarget;
-#else
+#else*/
 	return NULL;
-#endif// HL2_DLL
+//#endif// HL2_DLL
 }
 
 //-----------------------------------------------------------------------------
@@ -9830,6 +9830,7 @@ Vector CAI_BaseNPC::GetActualShootTrajectory( const Vector &shootOrigin )
 
 	// Apply appropriate accuracy.
 	bool bUsePerfectAccuracy = false;
+	/*#if defined (HL2_DLL) || defined (TF2CE)
 	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_BULLSEYE )
 	{
 		CNPC_Bullseye *pBullseye = dynamic_cast<CNPC_Bullseye*>(GetEnemy()); 
@@ -9838,6 +9839,7 @@ Vector CAI_BaseNPC::GetActualShootTrajectory( const Vector &shootOrigin )
 			bUsePerfectAccuracy = true;
 		}
 	}
+	#endif*/
 
 	if ( !bUsePerfectAccuracy )
 	{
@@ -11834,7 +11836,7 @@ void CAI_BaseNPC::CleanupScriptsOnTeleport( bool bEnrouteAsWell )
 //-----------------------------------------------------------------------------
 bool CAI_BaseNPC::HandleInteraction(int interactionType, void *data, CBaseCombatCharacter* sourceEnt)
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+/*#if defined (HL2_DLL) || defined (TF2CE)
 	if ( interactionType == g_interactionBarnacleVictimGrab )
 	{
 		// Make the victim stop thinking so they're as good as dead without 
@@ -11854,7 +11856,7 @@ bool CAI_BaseNPC::HandleInteraction(int interactionType, void *data, CBaseCombat
 
 		return true;
 	}
-#endif // HL2_DLL
+#endif // HL2_DLL*/
 
 	return BaseClass::HandleInteraction( interactionType, data, sourceEnt );
 }
