@@ -61,7 +61,7 @@ IMPLEMENT_SERVERCLASS_ST(CBaseFlex, DT_BaseFlex)
 	SendPropArray3	(SENDINFO_ARRAY3(m_flexWeight), SendPropFloat(SENDINFO_ARRAY(m_flexWeight), 12, SPROP_ROUNDDOWN, 0.0f, 1.0f ) /*, SendProxy_FlexWeights*/ ),
 	SendPropInt		(SENDINFO(m_blinktoggle), 1, SPROP_UNSIGNED ),
 	SendPropVector	(SENDINFO(m_viewtarget), -1, SPROP_COORD),
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined (HL2_DLL)
 	SendPropFloat	( SENDINFO_VECTORELEM(m_vecViewOffset, 0), 0, SPROP_NOSCALE ),
 	SendPropFloat	( SENDINFO_VECTORELEM(m_vecViewOffset, 1), 0, SPROP_NOSCALE ),
 	SendPropFloat	( SENDINFO_VECTORELEM(m_vecViewOffset, 2), 0, SPROP_NOSCALE ),
@@ -86,7 +86,7 @@ BEGIN_DATADESC( CBaseFlex )
 	//						m_bUpdateLayerPriorities
 	DEFINE_FIELD( m_flLastFlexAnimationTime, FIELD_TIME ),
 
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined (HL2_DLL)
 	//DEFINE_FIELD( m_vecPrevOrigin, FIELD_POSITION_VECTOR ),
 	//DEFINE_FIELD( m_vecPrevVelocity, FIELD_VECTOR ),
 	DEFINE_FIELD( m_vecLean, FIELD_VECTOR ),
@@ -960,7 +960,7 @@ public:
 		FindSceneFile( NULL, "phonemes", true );
 		FindSceneFile( NULL, "phonemes_weak", true );
 		FindSceneFile( NULL, "phonemes_strong", true );
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined (HL2_DLL)
 		FindSceneFile( NULL, "random", true );
 		FindSceneFile( NULL, "randomAlert", true );
 #endif
@@ -2101,7 +2101,7 @@ bool CBaseFlex::IsSuppressedFlexAnimation( CSceneEventInfo *info )
 void CBaseFlex::Teleport( const Vector *newPosition, const QAngle *newAngles, const Vector *newVelocity )
 {
 	BaseClass::Teleport( newPosition, newAngles, newVelocity );
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined (HL2_DLL)
 
 	// clear out Body Lean
 	m_vecPrevOrigin = vec3_origin;
@@ -2115,7 +2115,7 @@ void CBaseFlex::Teleport( const Vector *newPosition, const QAngle *newAngles, co
 
 void CBaseFlex::DoBodyLean( void )
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined (HL2_DLL)
 	CAI_BaseNPC *myNpc = MyNPCPointer( );
 
 	if (myNpc)

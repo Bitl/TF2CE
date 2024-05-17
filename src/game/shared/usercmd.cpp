@@ -169,7 +169,7 @@ void WriteUsercmd( bf_write *buf, const CUserCmd *to, const CUserCmd *from )
 		buf->WriteOneBit( 0 );
 	}
 
-#if defined( HL2_CLIENT_DLL )
+#if defined(HL2_CLIENT_DLL) || defined(TF2CE)
 	if ( to->entitygroundcontact.Count() != 0 )
 	{
 		buf->WriteOneBit( 1 );

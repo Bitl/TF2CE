@@ -41,7 +41,7 @@ IMPLEMENT_CLIENTCLASS_DT(C_BaseFlex, DT_BaseFlex, CBaseFlex)
 	RecvPropInt(RECVINFO(m_blinktoggle)),
 	RecvPropVector(RECVINFO(m_viewtarget)),
 
-#ifdef HL2_CLIENT_DLL
+#if defined(HL2_CLIENT_DLL)
 	RecvPropFloat( RECVINFO(m_vecViewOffset[0]) ),
 	RecvPropFloat( RECVINFO(m_vecViewOffset[1]) ),
 	RecvPropFloat( RECVINFO(m_vecViewOffset[2]) ),
@@ -120,7 +120,7 @@ bool GetHWMExpressionFileName( const char *pFilename, char *pHWMFilename )
 C_BaseFlex::C_BaseFlex() : 
 	m_iv_viewtarget( "C_BaseFlex::m_iv_viewtarget" ), 
 	m_iv_flexWeight("C_BaseFlex:m_iv_flexWeight" ),
-#ifdef HL2_CLIENT_DLL
+#if defined(HL2_CLIENT_DLL)
 	m_iv_vecLean("C_BaseFlex:m_iv_vecLean" ),
 	m_iv_vecShift("C_BaseFlex:m_iv_vecShift" ),
 #endif
@@ -228,7 +228,7 @@ void C_BaseFlex::StandardBlendingRules( CStudioHdr *hdr, Vector pos[], Quaternio
 {
 	BaseClass::StandardBlendingRules( hdr, pos, q, currentTime, boneMask );
 
-#ifdef HL2_CLIENT_DLL
+#if defined(HL2_CLIENT_DLL)
 	// shift pelvis, rotate body
 	if (hdr->GetNumIKChains() != 0 && (m_vecShift.x != 0.0 || m_vecShift.y != 0.0))
 	{
@@ -346,7 +346,7 @@ bool CFlexSceneFileManager::Init()
 	FindSceneFile( NULL, "phonemes_weak", true );
 	FindSceneFile(NULL,  "phonemes_strong", true );
 
-#if defined( HL2_CLIENT_DLL )
+#if defined(HL2_CLIENT_DLL) || defined(TF2CE)
 	FindSceneFile( NULL, "random", true );
 	FindSceneFile( NULL, "randomAlert", true );
 #endif

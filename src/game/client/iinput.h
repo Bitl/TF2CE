@@ -97,7 +97,7 @@ public:
 	virtual	bool		CAM_IsOrthographic() const = 0;
 	virtual	void		CAM_OrthographicSize( float& w, float& h ) const = 0;
 
-#if defined( HL2_CLIENT_DLL )
+#if defined(HL2_CLIENT_DLL) || defined(TF2CE)
 	// IK back channel info
 	virtual void		AddIKGroundContactInfo( int entindex, float minheight, float maxheight ) = 0;
 #endif
