@@ -74,7 +74,16 @@ float GetZoomOwnerDesiredFOV( CBaseEntity *pZoomOwner )
 //-----------------------------------------------------------------------------
 void CEnvZoom::InputZoom( inputdata_t &inputdata )
 {
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+	CBasePlayer* pPlayer;
+
+	if (inputdata.pActivator && inputdata.pActivator->IsPlayer())
+		pPlayer = ToBasePlayer(inputdata.pActivator);
+	else
+		pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 	if ( pPlayer )
 	{
@@ -105,7 +114,15 @@ void CEnvZoom::InputZoom( inputdata_t &inputdata )
 //-----------------------------------------------------------------------------
 void CEnvZoom::InputUnZoom( inputdata_t &inputdata )
 {
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+	CBasePlayer* pPlayer;
+	if (inputdata.pActivator && inputdata.pActivator->IsPlayer())
+		pPlayer = ToBasePlayer(inputdata.pActivator);
+	else
+		pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 	if ( pPlayer )
 	{
