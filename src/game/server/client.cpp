@@ -70,6 +70,15 @@ eAllowPointServerCommand sAllowPointServerCommand = eAllowOfficial;
 eAllowPointServerCommand sAllowPointServerCommand = eAllowAlways;
 #endif // TF_DLL
 
+#ifdef TF2CE
+#ifdef TF_DLL
+// The default value here should match the default of the convar
+eAllowPointServerCommand sAllowPointClientCommand = eAllowOfficial;
+#else
+eAllowPointServerCommand sAllowPointClientCommand = eAllowAlways;
+#endif // TF_DLL
+#endif
+
 void sv_allow_point_servercommand_changed( IConVar *pConVar, const char *pOldString, float flOldValue )
 {
 	ConVarRef var( pConVar );
@@ -110,6 +119,49 @@ ConVar sv_allow_point_servercommand ( "sv_allow_point_servercommand",
                                       "  official : Allowed for valve maps only\n"
 #endif // TF_DLL
                                       "  always   : Allow for all maps", sv_allow_point_servercommand_changed );
+
+#ifdef TF2CE
+void sv_allow_point_clientcommand_changed( IConVar *pConVar, const char *pOldString, float flOldValue )
+{
+	ConVarRef var( pConVar );
+	if ( !var.IsValid() )
+	{
+		return;
+	}
+
+	const char *pNewValue = var.GetString();
+	if ( V_strcasecmp ( pNewValue, "always" ) == 0 )
+	{
+		sAllowPointClientCommand = eAllowAlways;
+	}
+#ifdef TF_DLL
+	else if ( V_strcasecmp ( pNewValue, "official" ) == 0 )
+	{
+		sAllowPointClientCommand = eAllowOfficial;
+	}
+#endif // TF_DLL
+	else
+	{
+		sAllowPointClientCommand = eAllowNever;
+	}
+}
+
+ConVar sv_allow_point_clientcommand ( "sv_allow_point_clientcommand",
+#ifdef TF_DLL
+                                      // The default value here should match the default of the convar
+                                      "official",
+#else
+                                      // Other games may use this in their official maps, and only TF exposes IsValveMap() currently
+                                      "always",
+#endif // TF_DLL
+                                      FCVAR_NONE,
+                                      "Allow use of point_clientcommand entities in map. Potentially dangerous for untrusted maps.\n"
+                                      "  disallow : Always disallow\n"
+#ifdef TF_DLL
+                                      "  official : Allowed for valve maps only\n"
+#endif // TF_DLL
+                                      "  always   : Allow for all maps", sv_allow_point_clientcommand_changed);
+#endif
 
 void ClientKill( edict_t *pEdict, const Vector &vecForce, bool bExplode = false )
 {
@@ -570,31 +622,50 @@ void CPointClientCommand::InputCommand( inputdata_t& inputdata )
 	if ( !inputdata.value.String()[0] )
 		return;
 
-	edict_t *pClient = NULL;
-	if ( gpGlobals->maxClients == 1 )
+#ifdef TF2CE
+	bool bAllowed = (sAllowPointClientCommand == eAllowAlways);
+#ifdef TF_DLL
+	if (sAllowPointClientCommand == eAllowOfficial)
 	{
-		pClient = engine->PEntityOfEntIndex( 1 );
+		bAllowed = TFGameRules() && TFGameRules()->IsValveMap();
+	}
+#endif // TF_DLL
+
+	if (bAllowed)
+	{
+#endif
+		edict_t* pClient = NULL;
+		if (gpGlobals->maxClients == 1)
+		{
+			pClient = engine->PEntityOfEntIndex(1);
+		}
+		else
+		{
+			// In multiplayer, send it back to the activator
+			CBasePlayer* player = dynamic_cast<CBasePlayer*>(inputdata.pActivator);
+			if (player)
+			{
+				pClient = player->edict();
+			}
+
+			if (IsInCommentaryMode() && !pClient)
+			{
+				// Commentary is stuffing a command in. We'll pretend it came from the first player.
+				pClient = engine->PEntityOfEntIndex(1);
+			}
+		}
+
+		if (!pClient || !pClient->GetUnknown())
+			return;
+
+		engine->ClientCommand(pClient, "%s\n", inputdata.value.String());
+#ifdef TF2CE
 	}
 	else
 	{
-		// In multiplayer, send it back to the activator
-		CBasePlayer *player = dynamic_cast< CBasePlayer * >( inputdata.pActivator );
-		if ( player )
-		{
-			pClient = player->edict();
-		}
-
-		if ( IsInCommentaryMode() && !pClient )
-		{
-			// Commentary is stuffing a command in. We'll pretend it came from the first player.
-			pClient = engine->PEntityOfEntIndex( 1 );
-		}
+		Warning("sv_allow_point_clientcommand usage blocked by sv_allow_point_clientcommand setting\n");
 	}
-
-	if ( !pClient || !pClient->GetUnknown() )
-		return;
-
-	engine->ClientCommand( pClient, "%s\n", inputdata.value.String() );
+#endif
 }
 
 BEGIN_DATADESC( CPointClientCommand )
