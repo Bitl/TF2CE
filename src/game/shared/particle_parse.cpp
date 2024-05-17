@@ -569,7 +569,7 @@ void StopParticleEffects( CBaseEntity *pEntity )
 
 #endif	//!CLIENT_DLL
 
-#if defined( CLIENT_DLL ) && (defined( STAGING_ONLY ) || defined(TF2CE))
+#if defined( CLIENT_DLL ) && defined( STAGING_ONLY )
 	
 	void CC_DispatchParticle( const CCommand& args )
 	{
