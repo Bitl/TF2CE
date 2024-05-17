@@ -1503,7 +1503,11 @@ void CChangeLevel::InputChangeLevel( inputdata_t &inputdata )
 	// Ignore changelevel transitions if the player's dead or attempting a challenge
 	if ( gpGlobals->maxClients == 1 )
 	{
-		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+		CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+		CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+#endif //obco_Enable_Fixed_Multiplayer_AI
 		if ( pPlayer && ( !pPlayer->IsAlive() || pPlayer->GetBonusChallenge() > 0 ) )
 			return;
 	}
@@ -1604,7 +1608,11 @@ void CChangeLevel::ChangeLevelNow( CBaseEntity *pActivator )
 
 	m_bTouched = true;
 
-	CBaseEntity *pPlayer = (pActivator && pActivator->IsPlayer()) ? pActivator : UTIL_GetLocalPlayer();
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+	CBaseEntity* pPlayer = (pActivator && pActivator->IsPlayer()) ? pActivator : UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+	CBaseEntity* pPlayer = (pActivator && pActivator->IsPlayer()) ? pActivator : UTIL_GetLocalPlayer();
+#endif //obco_Enable_Fixed_Multiplayer_AI
 
 	int transitionState = InTransitionVolume(pPlayer, m_szLandmarkName);
 	if ( transitionState == TRANSITION_VOLUME_SCREENED_OUT )
@@ -2613,7 +2621,11 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
 		if ( g_ServerGameDLL.m_fAutoSaveDangerousTime != 0.0f && g_ServerGameDLL.m_fAutoSaveDangerousTime >= gpGlobals->curtime )
 		{
 			// A previous dangerous auto save was waiting to become safe
-			CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+			CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+			CBasePlayer* pPlayer = UTIL_PlayerByIndex(1);
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 			if ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime )
 			{
@@ -2633,7 +2645,11 @@ void CTriggerSave::Touch( CBaseEntity *pOther )
 	if ( m_fDangerousTimer != 0.0f )
 	{
 		// There's a dangerous timer. Save if we have enough hitpoints.
-		CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+		CBasePlayer* pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
+		CBasePlayer* pPlayer = UTIL_PlayerByIndex(1);
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 		if (pPlayer && pPlayer->GetHealth() >= m_minHitPoints)
 		{
@@ -3036,10 +3052,13 @@ void CTriggerCamera::Enable( void )
 {
 	m_state = USE_ON;
 
-	if ( !m_hPlayer || !m_hPlayer->IsPlayer() )
+	if (!m_hPlayer || !m_hPlayer->IsPlayer())
 	{
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+		m_hPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
+#else
 		m_hPlayer = UTIL_GetLocalPlayer();
-	}
+#endif //obco_Enable_Fixed_Multiplayer_AI
 
 	if ( !m_hPlayer )
 	{
@@ -3508,9 +3527,11 @@ static void PlayCDTrack( int iTrack )
 	edict_t *pClient;
 	
 	// manually find the single player. 
-	pClient = engine->PEntityOfEntIndex( 1 );
+	pClient = engine->PEntityOfEntIndex(1);
 
+#ifndef OBCO_Enable_Fixed_Multiplayer_AI
 	Assert(gpGlobals->maxClients == 1);
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 	
 	// Can't play if the client is not connected!
 	if ( !pClient )
