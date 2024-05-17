@@ -773,7 +773,9 @@ bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 	}
 
 #else
-	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+#ifndef OBCO_Enable_Fixed_Multiplayer_AI
+	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 	if( !UTIL_FindClientInPVS( pRagdoll->edict() ) )
 	{
@@ -782,13 +784,15 @@ bool ShouldRemoveThisRagdoll( CBaseAnimating *pRagdoll )
 
 		return true;
 	}
-	else if( !pPlayer->FInViewCone( pRagdoll ) )
+#ifndef OBCO_Enable_Fixed_Multiplayer_AI
+	else if (!pPlayer->FInViewCone(pRagdoll))
 	{
-		if ( g_debug_ragdoll_removal.GetBool() )
-			 NDebugOverlay::Line( pRagdoll->GetAbsOrigin(), pRagdoll->GetAbsOrigin() + Vector( 0, 0, 64 ), 0, 0, 255, true, 5 );
-		
+		if (g_debug_ragdoll_removal.GetBool())
+			NDebugOverlay::Line(pRagdoll->GetAbsOrigin(), pRagdoll->GetAbsOrigin() + Vector(0, 0, 64), 0, 0, 255, true, 5);
+
 		return true;
 	}
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 #endif
 
