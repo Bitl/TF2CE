@@ -1488,7 +1488,7 @@ void CAI_BaseNPC::MakeTracer( const Vector &vecTracerSrc, const trace_t &tr, int
 //-----------------------------------------------------------------------------
 void CAI_BaseNPC::FireBullets( const FireBulletsInfo_t &info )
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 	// If we're shooting at a bullseye, become perfectly accurate if the bullseye demands it
 	if ( GetEnemy() && GetEnemy()->Classify() == CLASS_BULLSEYE )
 	{

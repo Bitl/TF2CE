@@ -15,7 +15,7 @@
 #include "ai_network.h"
 #include "ai_networkmanager.h"
 
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 #include "npc_playercompanion.h"
 #endif // HL2_DLL
 
@@ -167,7 +167,7 @@ public:
 
 	void PostRestore( void )
 	{
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 		// We need this list to be regenerated
 		OverrideMoveCache_ForceRepopulateList();
 #endif // HL2_DLL

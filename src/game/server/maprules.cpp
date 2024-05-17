@@ -346,32 +346,26 @@ void CGameText::InputDisplay( inputdata_t &inputdata )
 
 void CGameText::Display( CBaseEntity *pActivator )
 {
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	// also send to all if we haven't got a specific activator player to send to 
-	if (MessageToAll() || !pActivator || !pActivator->IsPlayer())
-#else
-	if (MessageToAll())
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+	if ( !CanFireForActivator( pActivator ) )
+		return;
+
+	if ( MessageToAll() )
 	{
 		UTIL_HudMessageAll( m_textParms, MessageGet() );
 	}
 	else
 	{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-		UTIL_HudMessage(ToBasePlayer(pActivator), m_textParms, MessageGet());
-#else
 		// If we're in singleplayer, show the message to the player.
-		if (gpGlobals->maxClients == 1)
+		if ( gpGlobals->maxClients == 1 )
 		{
-			CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-			UTIL_HudMessage(pPlayer, m_textParms, MessageGet());
+			CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
+			UTIL_HudMessage( pPlayer, m_textParms, MessageGet() );
 		}
 		// Otherwise show the message to the player that triggered us.
-		else if (pActivator && pActivator->IsNetClient())
+		else if ( pActivator && pActivator->IsNetClient() )
 		{
-			UTIL_HudMessage(ToBasePlayer(pActivator), m_textParms, MessageGet());
+			UTIL_HudMessage( ToBasePlayer( pActivator ), m_textParms, MessageGet() );
 		}
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 	}
 }
 

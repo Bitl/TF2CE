@@ -305,7 +305,7 @@ void CNPC_Furniture::Precache( void )
 int	CNPC_Furniture::ObjectCaps( void ) 
 { 
 	// HL2 furniture transitions
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 	return CAI_BaseNPC::ObjectCaps(); 
 #else
 	return (CAI_BaseNPC::ObjectCaps() & ~FCAP_ACROSS_TRANSITION); 

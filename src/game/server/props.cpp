@@ -499,7 +499,7 @@ void CBreakableProp::HandleFirstCollisionInteractions( int index, gamevcollision
 
 		if ( tr.m_pEnt )
 		{
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 			// Don't paintsplat friendlies
 			int iClassify = tr.m_pEnt->Classify();
 			if ( iClassify != CLASS_PLAYER_ALLY_VITAL && iClassify != CLASS_PLAYER_ALLY && 

@@ -191,17 +191,10 @@ ConVar  sv_player_display_usercommand_errors( "sv_player_display_usercommand_err
 
 ConVar  player_debug_print_damage( "player_debug_print_damage", "0", FCVAR_CHEAT, "When true, print amount and type of all damage received by player to console." );
 
-#ifdef TF2CE
-ConVar	tf2ce_allow_proppickup("tf2ce_allow_proppickup", "0", FCVAR_REPLICATED);
-#endif
 
-void CC_GiveCurrentAmmo(void)
+void CC_GiveCurrentAmmo( void )
 {
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	CBasePlayer* pPlayer = UTIL_GetCommandClient();
-#else
-	CBasePlayer* pPlayer = UTIL_PlayerByIndex(1);
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+	CBasePlayer *pPlayer = UTIL_PlayerByIndex(1);
 
 	if( pPlayer )
 	{
@@ -736,56 +729,22 @@ int CBasePlayer::ShouldTransmit( const CCheckTransmitInfo *pInfo )
 }
 
 
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-bool CBasePlayer::WantsLagCompensationOnEntity(const CBaseEntity* pEntity, const CUserCmd* pCmd, const CBitVec<MAX_EDICTS>* pEntityTransmitBits) const
+bool CBasePlayer::WantsLagCompensationOnEntity( const CBasePlayer *pPlayer, const CUserCmd *pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits ) const
 {
-	//Tony; only check teams in teamplay
-	if (gpGlobals->teamplay)
-	{
-		// Team members shouldn't be adjusted unless friendly fire is on.
-		if (!friendlyfire.GetInt() && pEntity->GetTeamNumber() == GetTeamNumber())
-			return false;
-	}
-
-	// If this entity hasn't been transmitted to us and acked, then don't bother lag compensating it.
-	if (pEntityTransmitBits && !pEntityTransmitBits->Get(pEntity->entindex()))
+	// Team members shouldn't be adjusted unless friendly fire is on.
+	if ( !friendlyfire.GetInt() && pPlayer->GetTeamNumber() == GetTeamNumber() )
 		return false;
 
-	const Vector& vMyOrigin = GetAbsOrigin();
-	const Vector& vHisOrigin = pEntity->GetAbsOrigin();
-
-	// get max distance player could have moved within max lag compensation time, 
-	// multiply by 1.5 to to avoid "dead zones"  (sqrt(2) would be the exact value)
-	//float maxDistance = 1.5 * pPlayer->MaxSpeed() * sv_maxunlag.GetFloat(); 
-	float maxspeed;
-	CBasePlayer* pPlayer = ToBasePlayer((CBaseEntity*)pEntity);
-	if (pPlayer)
-		maxspeed = pPlayer->MaxSpeed();
-	else
-		maxspeed = 600;
-	float maxDistance = 1.5 * maxspeed * sv_maxunlag.GetFloat();
-#else
-bool CBasePlayer::WantsLagCompensationOnEntity(const CBasePlayer * pPlayer, const CUserCmd * pCmd, const CBitVec<MAX_EDICTS> *pEntityTransmitBits) const
-{
-	//Tony; only check teams in teamplay
-	if (gpGlobals->teamplay)
-	{
-		// Team members shouldn't be adjusted unless friendly fire is on.
-		if (!friendlyfire.GetInt() && pPlayer->GetTeamNumber() == GetTeamNumber())
-			return false;
-	}
-
 	// If this entity hasn't been transmitted to us and acked, then don't bother lag compensating it.
-	if (pEntityTransmitBits && !pEntityTransmitBits->Get(pPlayer->entindex()))
+	if ( pEntityTransmitBits && !pEntityTransmitBits->Get( pPlayer->entindex() ) )
 		return false;
 
-	const Vector& vMyOrigin = GetAbsOrigin();
-	const Vector& vHisOrigin = pPlayer->GetAbsOrigin();
+	const Vector &vMyOrigin = GetAbsOrigin();
+	const Vector &vHisOrigin = pPlayer->GetAbsOrigin();
 
 	// get max distance player could have moved within max lag compensation time, 
 	// multiply by 1.5 to to avoid "dead zones"  (sqrt(2) would be the exact value)
 	float maxDistance = 1.5 * pPlayer->MaxSpeed() * sv_maxunlag.GetFloat();
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 	// If the player is within this distance, lag compensate them in case they're running past us.
 	if ( vHisOrigin.DistTo( vMyOrigin ) < maxDistance )
@@ -2903,67 +2862,6 @@ bool CBasePlayer::CanPickupObject( CBaseEntity *pObject, float massLimit, float 
 	}
 
 	return true;
-#elif TF2CE
-		//Must be valid
-	if (pObject == NULL)
-		return false;
-
-	//Must move with physics
-	if (pObject->GetMoveType() != MOVETYPE_VPHYSICS)
-		return false;
-
-	IPhysicsObject* pList[VPHYSICS_MAX_OBJECT_LIST_COUNT];
-	int count = pObject->VPhysicsGetObjectList(pList, ARRAYSIZE(pList));
-
-	//Must have a physics object
-	if (!count)
-		return false;
-
-	float objectMass = 0;
-	bool checkEnable = false;
-	for (int i = 0; i < count; i++)
-	{
-		objectMass += pList[i]->GetMass();
-		if (!pList[i]->IsMoveable())
-		{
-			checkEnable = true;
-		}
-		if (pList[i]->GetGameFlags() & FVPHYSICS_NO_PLAYER_PICKUP)
-			return false;
-		if (pList[i]->IsHinged())
-			return false;
-	}
-
-
-	//Msg( "Target mass: %f\n", pPhys->GetMass() );
-
-	//Must be under our threshold weight
-	if (massLimit > 0 && objectMass > massLimit)
-		return false;
-
-	if (checkEnable)
-	{
-		// Allow pickup of phys props that are motion enabled on player pickup
-		CPhysicsProp* pProp = dynamic_cast<CPhysicsProp*>(pObject);
-		CPhysBox* pBox = dynamic_cast<CPhysBox*>(pObject);
-		if (!pProp && !pBox)
-			return false;
-
-		if (pProp && !(pProp->HasSpawnFlags(SF_PHYSPROP_ENABLE_ON_PHYSCANNON)))
-			return false;
-
-		if (pBox && !(pBox->HasSpawnFlags(SF_PHYSBOX_ENABLE_ON_PHYSCANNON)))
-			return false;
-	}
-
-	if (sizeLimit > 0)
-	{
-		const Vector& size = pObject->CollisionProp()->OBBSize();
-		if (size.x > sizeLimit || size.y > sizeLimit || size.z > sizeLimit)
-			return false;
-	}
-
-	return tf2ce_allow_proppickup.GetBool();
 #else
 	return false;
 #endif
@@ -7709,33 +7607,22 @@ void CStripWeapons::InputStripWeaponsAndSuit(inputdata_t &data)
 	StripWeapons(data, true);
 }
 
-void CStripWeapons::StripWeapons(inputdata_t& data, bool stripSuit)
+void CStripWeapons::StripWeapons(inputdata_t &data, bool stripSuit)
 {
-	CBasePlayer* pPlayer = NULL;
+	CBasePlayer *pPlayer = NULL;
 
-	if (data.pActivator && data.pActivator->IsPlayer())
+	if ( data.pActivator && data.pActivator->IsPlayer() )
 	{
-		pPlayer = (CBasePlayer*)data.pActivator;
+		pPlayer = (CBasePlayer *)data.pActivator;
 	}
-	else if (!g_pGameRules->IsDeathmatch())
+	else if ( !g_pGameRules->IsDeathmatch() )
 	{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-		for (int i = 1; i <= gpGlobals->maxClients; i++)
-		{
-			CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-			if (pPlayer)
-			{
-				pPlayer->RemoveAllItems(stripSuit);
-			}
-		}
-#else
 		pPlayer = UTIL_GetLocalPlayer();
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+	}
 
-		if (pPlayer)
-		{
-			pPlayer->RemoveAllItems(stripSuit);
-		}
+	if ( pPlayer )
+	{
+		pPlayer->RemoveAllItems( stripSuit );
 	}
 }
 
@@ -7826,38 +7713,18 @@ void CRevertSaved::Use( CBaseEntity *pActivator, CBaseEntity *pCaller, USE_TYPE 
 	SetNextThink( gpGlobals->curtime + LoadTime() );
 	SetThink( &CRevertSaved::LoadThink );
 
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer)
-			continue;
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 
-		if (pPlayer)
-		{
-			//Adrian: Setting this flag so we can't move or save a game.
-			pPlayer->pl.deadflag = true;
-			pPlayer->AddFlag((FL_NOTARGET | FL_FROZEN));
-
-			// clear any pending autosavedangerous
-			g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
-			g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
-		}
-	}
-#else
-	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-
-	if (pPlayer)
+	if ( pPlayer )
 	{
 		//Adrian: Setting this flag so we can't move or save a game.
 		pPlayer->pl.deadflag = true;
-		pPlayer->AddFlag((FL_NOTARGET | FL_FROZEN));
+		pPlayer->AddFlag( (FL_NOTARGET|FL_FROZEN) );
 
 		// clear any pending autosavedangerous
 		g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
 		g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
 	}
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 }
 
 void CRevertSaved::InputReload( inputdata_t &inputdata )
@@ -7872,38 +7739,18 @@ void CRevertSaved::InputReload( inputdata_t &inputdata )
 	SetThink( &CRevertSaved::LoadThink );
 #endif
 
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	for (int i = 1; i <= gpGlobals->maxClients; i++)
-	{
-		CBasePlayer* pPlayer = UTIL_PlayerByIndex(i);
-		if (!pPlayer)
-			continue;
+	CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 
-		if (pPlayer)
-		{
-			//Adrian: Setting this flag so we can't move or save a game.
-			pPlayer->pl.deadflag = true;
-			pPlayer->AddFlag((FL_NOTARGET | FL_FROZEN));
-
-			// clear any pending autosavedangerous
-			g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
-			g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
-		}
-	}
-#else
-	CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-
-	if (pPlayer)
+	if ( pPlayer )
 	{
 		//Adrian: Setting this flag so we can't move or save a game.
 		pPlayer->pl.deadflag = true;
-		pPlayer->AddFlag((FL_NOTARGET | FL_FROZEN));
+		pPlayer->AddFlag( (FL_NOTARGET|FL_FROZEN) );
 
 		// clear any pending autosavedangerous
 		g_ServerGameDLL.m_fAutoSaveDangerousTime = 0.0f;
 		g_ServerGameDLL.m_fAutoSaveDangerousMinHealthToCommit = 0.0f;
-		}
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+	}
 }
 
 #ifdef HL1_DLL
@@ -7928,16 +7775,6 @@ void CRevertSaved::LoadThink( void )
 	{
 		engine->ServerCommand("reload\n");
 	}
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	//TDT - Information: Here we change level to the map we're already on if a vital ally such as Alyx is killed etc etc etc.
-	else
-	{
-		char* szDefaultMapName = new char[32];
-		Q_strncpy(szDefaultMapName, STRING(gpGlobals->mapname), 32);
-		engine->ChangeLevel(szDefaultMapName, NULL);
-		return;
-	}
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 }
 
 #define SF_SPEED_MOD_SUPPRESS_WEAPONS	(1<<0)	// Take away weapons
@@ -8012,13 +7849,9 @@ void CMovementSpeedMod::InputSpeedMod(inputdata_t &data)
 	{
 		pPlayer = (CBasePlayer *)data.pActivator;
 	}
-	else if (!g_pGameRules->IsDeathmatch())
+	else if ( !g_pGameRules->IsDeathmatch() )
 	{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-		pPlayer = UTIL_GetNearestPlayer(GetAbsOrigin());
-#else
 		pPlayer = UTIL_GetLocalPlayer();
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 	}
 
 	if ( pPlayer )
@@ -8107,11 +7940,9 @@ void SendProxy_CropFlagsToPlayerFlagBitsLength( const SendProp *pProp, const voi
 		
 // If HL2_DLL is defined, then baseflex.cpp already sends these.
 #ifndef HL2_DLL
-#ifndef TF2CE
 		SendPropFloat		( SENDINFO_VECTORELEM(m_vecViewOffset, 0), 8, SPROP_ROUNDDOWN, -32.0, 32.0f),
 		SendPropFloat		( SENDINFO_VECTORELEM(m_vecViewOffset, 1), 8, SPROP_ROUNDDOWN, -32.0, 32.0f),
 		SendPropFloat		( SENDINFO_VECTORELEM(m_vecViewOffset, 2), 20, SPROP_CHANGES_OFTEN,	0.0f, 256.0f),
-#endif
 #endif
 
 		SendPropFloat		( SENDINFO(m_flFriction),		8,	SPROP_ROUNDDOWN,	0.0f,	4.0f),

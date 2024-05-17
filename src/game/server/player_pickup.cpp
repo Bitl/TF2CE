@@ -22,13 +22,9 @@ void Pickup_ForcePlayerToDropThisObject( CBaseEntity *pTarget )
 	if ( pPhysics == NULL )
 		return;
 
-	if (pPhysics->GetGameFlags() & FVPHYSICS_PLAYER_HELD)
+	if ( pPhysics->GetGameFlags() & FVPHYSICS_PLAYER_HELD )
 	{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-		CBasePlayer* pPlayer = UTIL_GetNearestPlayer(pTarget->GetAbsOrigin());
-#else
-		CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+		CBasePlayer *pPlayer = UTIL_GetLocalPlayer();
 		pPlayer->ForceDropOfCarriedPhysObjects( pTarget );
 	}
 }

@@ -105,7 +105,7 @@ void TE_PhysicsProp( IRecipientFilter& filter, float delay,
 void TE_ClientProjectile( IRecipientFilter& filter, float delay,
 	 const Vector* vecOrigin, const Vector* vecVelocity, int modelindex, int lifetime, CBaseEntity *pOwner );
 
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 void TE_GaussExplosion( IRecipientFilter& filter, float delayt,
 			 const Vector &pos, const Vector &dir, int type );
 #endif
@@ -479,7 +479,7 @@ public:
 	virtual void GaussExplosion( IRecipientFilter& filter, float delay,
 				const Vector &pos, const Vector &dir, int type )
 	{
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 		if ( !SuppressTE( filter ) )
 		{
 			TE_GaussExplosion( filter, delay, pos, dir, type );

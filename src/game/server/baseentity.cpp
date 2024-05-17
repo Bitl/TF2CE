@@ -3255,7 +3255,7 @@ void CBaseEntity::OnSave( IEntitySaveUtils *pUtils )
 //-----------------------------------------------------------------------------
 void CBaseEntity::OnRestore()
 {
-#if defined( PORTAL ) || defined( HL2_EPISODIC ) || defined ( HL2_DLL ) || defined( HL2_LOSTCOAST ) || defined (TF2CE)
+#if defined( PORTAL ) || defined( HL2_EPISODIC ) || defined ( HL2_DLL ) || defined( HL2_LOSTCOAST )
 	// We had a short period during the 2013 beta where the FL_* flags had a bogus value near the top, so detect
 	// these bad saves and just give up. Only saves from the short beta period should have been effected.
 	if ( GetFlags() & FL_FAKECLIENT )

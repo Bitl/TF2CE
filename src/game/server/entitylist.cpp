@@ -18,7 +18,7 @@
 #include "globalstate.h"
 #include "datacache/imdlcache.h"
 
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 #include "npc_playercompanion.h"
 #endif // HL2_DLL
 
@@ -1413,7 +1413,7 @@ public:
 		g_TouchManager.LevelInitPreEntity();
 		g_AimManager.LevelInitPreEntity();
 		g_SimThinkManager.LevelInitPreEntity();
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 		OverrideMoveCache_LevelInitPreEntity();
 #endif	// HL2_DLL
 	}
@@ -1426,7 +1426,7 @@ public:
 		g_TouchManager.LevelShutdownPostEntity();
 		g_AimManager.LevelShutdownPostEntity();
 		g_SimThinkManager.LevelShutdownPostEntity();
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 		OverrideMoveCache_LevelShutdownPostEntity();
 #endif // HL2_DLL
 		CBaseEntityClassList *pClassList = s_pClassLists;
