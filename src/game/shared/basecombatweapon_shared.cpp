@@ -1032,9 +1032,11 @@ void CBaseCombatWeapon::SetActivity( Activity act, float duration )
 	if ( sequence == ACTIVITY_NOT_AVAILABLE )
 		sequence = SelectWeightedSequence( ACT_VM_IDLE );
 
-	//Adrian: Oh man again...
-#if !defined( CLIENT_DLL ) && (defined( HL2MP ) || defined( PORTAL ))
-	SetModel( GetViewModel() );
+#if !defined( CLIENT_DLL ) && (defined( HL2MP ) || defined( PORTAL ) )
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+	if (GetOwner()->IsPlayer())
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
+		SetModel(GetViewModel());
 #endif
 
 	if ( sequence != ACTIVITY_NOT_AVAILABLE )

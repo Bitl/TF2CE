@@ -243,8 +243,11 @@ CON_COMMAND_F( mp_forcewin, "Forces team to win", FCVAR_CHEAT )
 		int iTeam = TEAM_UNASSIGNED;		
 		if ( args.ArgC() == 1 )
 		{
-			// if no team specified, use player 1's team
-			iTeam = UTIL_PlayerByIndex( 1 )->GetTeamNumber();	
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+			iTeam = UTIL_GetLocalPlayer()->GetTeamNumber();
+#else
+			iTeam = UTIL_PlayerByIndex(1)->GetTeamNumber();
+#endif //OBCO_Enable_Fixed_Multiplayer_AI	
 		}
 		else if ( args.ArgC() == 2 )
 		{

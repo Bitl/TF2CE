@@ -1830,7 +1830,11 @@ void CGameMovement::Accelerate( Vector& wishdir, float wishspeed, float accel )
 		return;
 
 	// See if we are changing direction a bit
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+	currentspeed = sqrt(DotProduct(mv->m_vecVelocity, mv->m_vecVelocity));
+#else
 	currentspeed = mv->m_vecVelocity.Dot(wishdir);
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 
 	// Reduce wishspeed by the amount of veer.
 	addspeed = wishspeed - currentspeed;
