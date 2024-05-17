@@ -160,13 +160,9 @@ void CColorCorrectionVolume::Spawn( void )
 	}
 }
 
-bool CColorCorrectionVolume::PassesTriggerFilters(CBaseEntity* pEntity)
+bool CColorCorrectionVolume::PassesTriggerFilters( CBaseEntity *pEntity )
 {
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-	if (pEntity->IsPlayer())
-#else
-	if (pEntity == UTIL_GetLocalPlayer())
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+	if( pEntity == UTIL_GetLocalPlayer() )
 		return true;
 
 	return false;

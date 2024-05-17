@@ -521,11 +521,7 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 		//
 		if ( FStrEq( pName, "player" ) )
 		{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-			return (CBaseEntity*)UTIL_GetLocalPlayer();
-#else
-			return (CBaseEntity*)UTIL_PlayerByIndex(1);
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+			return (CBaseEntity *)UTIL_PlayerByIndex( 1 );
 		}
 		else if ( FStrEq( pName, "pvsplayer" ) )
 		{
@@ -541,11 +537,7 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 			else
 			{
 				// FIXME: error condition?
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-				return (CBaseEntity*)UTIL_GetLocalPlayer();
-#else
-				return (CBaseEntity*)UTIL_PlayerByIndex(1);
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+				return (CBaseEntity *)UTIL_PlayerByIndex( 1 );
 			}
 
 		}
@@ -559,11 +551,7 @@ CBaseEntity *CGlobalEntityList::FindEntityProcedural( const char *szName, CBaseE
 		}
 		else if ( FStrEq( pName, "picker" ) )
 		{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-			return FindPickerEntity(UTIL_GetLocalPlayer());
-#else
-			return FindPickerEntity(UTIL_PlayerByIndex(1));
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+			return FindPickerEntity( UTIL_PlayerByIndex(1) );
 		}
 		else if ( FStrEq( pName, "self" ) )
 		{

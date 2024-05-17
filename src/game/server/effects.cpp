@@ -1130,11 +1130,7 @@ Vector CBlood::BloodPosition( CBaseEntity *pActivator )
 		}
 		else
 		{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-			player = UTIL_GetNearestVisiblePlayer(this);
-#else
 			player = UTIL_GetLocalPlayer();
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
 		}
 
 		if ( player )

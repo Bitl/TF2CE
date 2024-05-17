@@ -57,7 +57,7 @@
 // memdbgon must be the last include file in a .cpp file!!!
 #include "tier0/memdbgon.h"
 
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 extern int	g_interactionBarnacleVictimReleased;
 #endif //HL2_DLL
 
@@ -228,7 +228,7 @@ int	CBaseCombatCharacter::GetInteractionID(void)
 // ============================================================================
 bool CBaseCombatCharacter::HasHumanGibs( void )
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined( HL2_DLL )
 	Class_T myClass = Classify();
 	if ( myClass == CLASS_CITIZEN_PASSIVE   ||
 		 myClass == CLASS_CITIZEN_REBEL		||
@@ -263,7 +263,7 @@ bool CBaseCombatCharacter::HasHumanGibs( void )
 
 bool CBaseCombatCharacter::HasAlienGibs( void )
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined( HL2_DLL )
 	Class_T myClass = Classify();
 	if ( myClass == CLASS_BARNACLE		 || 
 		 myClass == CLASS_STALKER		 ||
@@ -332,7 +332,7 @@ bool CBaseCombatCharacter::FVisible( CBaseEntity *pEntity, int traceMask, CBaseE
 	VPROF( "CBaseCombatCharacter::FVisible" );
 
 	if ( traceMask != MASK_BLOCKLOS || !ShouldUseVisibilityCache() || pEntity == this
-#if defined (HL2_DLL) || defined (TF2CE)
+#if defined(HL2_DLL)
 		 || Classify() == CLASS_BULLSEYE || pEntity->Classify() == CLASS_BULLSEYE 
 #endif
 		 )
@@ -691,7 +691,7 @@ bool CBaseCombatCharacter::FInAimCone( const Vector &vecSpot )
 //-----------------------------------------------------------------------------
 bool CBaseCombatCharacter::HandleInteraction( int interactionType, void *data, CBaseCombatCharacter* sourceEnt )
 {
-#if defined (HL2_DLL) || defined (TF2CE)
+#ifdef HL2_DLL
 	if ( interactionType == g_interactionBarnacleVictimReleased )
 	{
 		// For now, throw away the NPC and leave the ragdoll.
