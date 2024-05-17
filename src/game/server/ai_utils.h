@@ -23,10 +23,19 @@
 
 inline CBasePlayer *AI_GetSinglePlayer()
 {
-	if ( gpGlobals->maxClients > 1 )
+#ifdef OBCO_Enable_Fixed_Multiplayer_AI
+	/*
+		if ( gpGlobals->maxClients > 1 )
+		{
+			return NULL;
+		}
+		*/
+#else
+	if (gpGlobals->maxClients > 1)
 	{
 		return NULL;
 	}
+#endif //OBCO_Enable_Fixed_Multiplayer_AI
 	
 	return UTIL_GetLocalPlayer();
 }
