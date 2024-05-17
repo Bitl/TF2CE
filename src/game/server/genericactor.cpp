@@ -447,13 +447,8 @@ void CFlextalkActor::ProcessSceneEvents( void )
 		}
 		else if (flex_talk.GetInt() == -4)
 		{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-			AddLookTarget(UTIL_GetNearestVisiblePlayer(this), 0.5, flex_looktime.GetFloat());
-#else
-			AddLookTarget(UTIL_PlayerByIndex(1), 0.5, flex_looktime.GetFloat());
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
-
-			flex_talk.SetValue("0");
+			AddLookTarget( UTIL_PlayerByIndex( 1 ), 0.5, flex_looktime.GetFloat()  );
+			flex_talk.SetValue( "0" );
 		}
 		else if (flex_talk.GetInt() == -5)
 		{

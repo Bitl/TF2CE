@@ -1341,13 +1341,9 @@ void CServerGameDLL::Think( bool finalTick )
 	if ( m_fAutoSaveDangerousTime != 0.0f && m_fAutoSaveDangerousTime < gpGlobals->curtime )
 	{
 		// The safety timer for a dangerous auto save has expired
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-		CBasePlayer* pPlayer = UTIL_GetLocalPlayer();
-#else
-		CBasePlayer* pPlayer = UTIL_PlayerByIndex(1);
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
+		CBasePlayer *pPlayer = UTIL_PlayerByIndex( 1 );
 
-		if (pPlayer && (pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime)
+		if ( pPlayer && ( pPlayer->GetDeathTime() == 0.0f || pPlayer->GetDeathTime() > gpGlobals->curtime )
 			&& !pPlayer->IsSinglePlayerGameEnding()
 			)
 		{
@@ -3199,15 +3195,10 @@ void CServerGameClients::GetBugReportInfo( char *buf, int buflen )
 
 	buf[ 0 ] = 0;
 
-	if (gpGlobals->maxClients == 1)
+	if ( gpGlobals->maxClients == 1 )
 	{
-#ifdef OBCO_Enable_Fixed_Multiplayer_AI
-		CBaseEntity* ent = FindPickerEntity(UTIL_GetLocalPlayer());
-#else
-		CBaseEntity* ent = FindPickerEntity(UTIL_PlayerByIndex(1));
-#endif //OBCO_Enable_Fixed_Multiplayer_AI
-
-		if (ent)
+		CBaseEntity *ent = FindPickerEntity( UTIL_PlayerByIndex(1) );
+		if ( ent )
 		{
 			Q_snprintf( buf, buflen, "Picker %i/%s - ent %s model %s\n",
 				ent->entindex(),
