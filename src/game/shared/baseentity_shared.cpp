@@ -79,10 +79,6 @@ ConVar	ai_shot_bias_min( "ai_shot_bias_min", "-1.0", FCVAR_REPLICATED );
 ConVar	ai_shot_bias_max( "ai_shot_bias_max", "1.0", FCVAR_REPLICATED );
 ConVar	ai_debug_shoot_positions( "ai_debug_shoot_positions", "0", FCVAR_REPLICATED | FCVAR_CHEAT );
 
-#ifdef TF2CE
-ConVar	tf2ce_underwater_shot_effects("tf2ce_underwater_shot_effects", "0", FCVAR_REPLICATED);
-#endif
-
 // Utility func to throttle rate at which the "reasonable position" spew goes out
 static double s_LastEntityReasonableEmitTime;
 bool CheckEmitReasonablePhysicsSpew()
@@ -2053,9 +2049,6 @@ bool CBaseEntity::ShouldDrawUnderwaterBulletBubbles()
 #if defined( HL2_DLL ) && defined( GAME_DLL )
 	CBaseEntity *pPlayer = ( gpGlobals->maxClients == 1 ) ? UTIL_GetLocalPlayer() : UTIL_GetNearestPlayer(GetAbsOrigin());
 	return pPlayer && (pPlayer->GetWaterLevel() == 3);
-#elif defined(TF2CE) && defined( GAME_DLL )
-	CBaseEntity* pPlayer = (gpGlobals->maxClients == 1) ? UTIL_GetLocalPlayer() : UTIL_GetNearestPlayer(GetAbsOrigin());
-	return pPlayer && (pPlayer->GetWaterLevel() == 3) && tf2ce_underwater_shot_effects.GetBool();
 #else
 	return false;
 #endif
